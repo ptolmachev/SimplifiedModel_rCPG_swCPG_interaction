@@ -34,6 +34,6 @@ if __name__ == '__main__':
                                                              "interim_T": 10, "amp": 0.45, "stim_duration": 0.1,
                                                              "n_stim": 1}}
     exp = Experiment(config_dict, base_folder)
-    exp.run(rerun=True)
+    exp.run(rerun=False)
     exp.plot_traces(param_names_tuple="Drives to sw. gate control and swCPG populations: ")
     exp.analyse_data()

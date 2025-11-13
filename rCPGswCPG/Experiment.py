@@ -127,7 +127,6 @@ class Experiment:
         return None
 
 
-
     def analyse_data(self):
         data_table = {"columns": ["Ti", "Ti_std", "Te", "Te_std", "Ttot", "Ttot_std", "spont_swallows",
                                   "N_sw", "N_br", "time_to_1st_sw", "time_to_2nd_sw", "N_sw_shortSI", "PIR"]}

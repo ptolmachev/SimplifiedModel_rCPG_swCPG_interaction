@@ -5,6 +5,17 @@ from rCPGswCPG.utils.gen_utils import get_project_root
 import os
 
 def generate_paramconfig_full_model():
+    ''' Generates and saves the parameter configuration for the full complex model
+     KF_phasic - Pontine Post-I
+     KF_gate - Pontine Swallowing gate control
+    Insp - Inspiratory population
+    RampI - premotor Inspiratory Ramp population
+    Exp - Expiratory population
+    LateExp - late Expiratory population   
+    Sw1 - swCPG population 1 (premotor, outputting to Vagus Nerve)
+    Sw2 - swCPG population 2
+    '''
+
     params_folder = os.path.join(get_project_root(), "data", "model_params")
     os.makedirs(params_folder, exist_ok=True)
     dt = 0.5

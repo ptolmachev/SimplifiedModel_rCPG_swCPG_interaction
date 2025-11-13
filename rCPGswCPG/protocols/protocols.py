@@ -11,6 +11,7 @@ class Protocol():
         return None
 
 class Protocol_noSI(Protocol):
+    ''' Protocol without Sensory Input (SI)'''
     def __init__(self, model, T):
         super().__init__(model)
         self.name = "Protocol_noSI"
@@ -23,6 +24,7 @@ class Protocol_noSI(Protocol):
         return None
 
 class Protocol_longSI(Protocol):
+    ''' Protocol with long Sensory Input '''
     def __init__(self, model, T, amp):
         super().__init__(model)
         self.name = "Protocol_longSI"
@@ -36,6 +38,7 @@ class Protocol_longSI(Protocol):
         return None
 
 class Protocol_shortSI(Protocol):
+    ''' Protocol with n_stim short Sensory Input '''
     def __init__(self, model, interim_T, amp, stim_duration, n_stim=4):
         super().__init__(model)
         self.name = "Protocol_shortSI"
@@ -54,6 +57,7 @@ class Protocol_shortSI(Protocol):
         return None
 
 class Protocol_LongShortSI(Protocol):
+    ''' Protocol with one long Sensory Input followed by n_stim short Sensory Input '''
     def __init__(self, model, noSI_T=2, longSI_T=10, interim_T=5, amp=0.45, stim_duration=0.1, n_stim=1):
         super().__init__(model)
         self.name = "Protocol_LongShortSI"
@@ -75,25 +79,8 @@ class Protocol_LongShortSI(Protocol):
         self.model.run(self.noSI_T, input=put(self.external_inputs, i, 0.0))
         return None
 
-def run_full_protocol(model, amp = 0.40, stim_duration=0.1, T_transient=15, T_no_stim=30, T_long_stim=10, interim_T=10, n_stim=4):
-    pnames = model.pnames
-    external_inputs = np.zeros(len(pnames))
-    model.run(T_transient, input=put(external_inputs, pnames.index("Sensory_relay"), 0))
-    model.clear_history()
-
-    i = model.pnames.index("Sensory_relay")
-    # no SI
-    model.run(T_no_stim, input=put(external_inputs, i, 0))
-    # long SI
-    model.run(T_long_stim, input=put(external_inputs, i, amp))
-    # short SI
-    for n in range(n_stim):
-        model.run(interim_T + int(n>0) * 2 * np.random.randn(), input=put(external_inputs, i, 0.0))
-        model.run(stim_duration, input=put(external_inputs, i, amp))
-    model.run(5, input=put(external_inputs, i, 0.0))
-    return None
-
 def run_KF_inhibited_protocol(model):
+    ''' Protocol with inhibited KF (Pons) population(s) '''
     amp = 0.45
     stim_duration = 0.1
     T = 5
@@ -101,7 +88,7 @@ def run_KF_inhibited_protocol(model):
     T_long_stim = 10
     pnames = model.populations
 
-    #set parameters for the inhibition of the KF:
+    #set parameters for the inhibition of the KF (Pons):
     KF_populations = ["KF_gate", "KF_phasic"]
     for KF_pop in KF_populations:
         model.populations[pnames.index(KF_pop)].drive = 0
@@ -126,4 +113,23 @@ def run_KF_inhibited_protocol(model):
     model.run(T + 2 * np.random.randn(), input=put(external_inputs, pnames.index("Sensory_relay"), 0.0))
     model.run(stim_duration, input=put(external_inputs, pnames.index("Sensory_relay"), amp))
     model.run(5, input=put(external_inputs, pnames.index("Sensory_relay"), 0.0))
+    return None
+
+
+def run_standalone_protocol(model, amp = 0.40, stim_duration=0.1, T_transient=15, T_no_stim=30, T_long_stim=10, interim_T=10, n_stim=4):
+    pnames = model.pnames
+    external_inputs = np.zeros(len(pnames))
+    model.run(T_transient, input=put(external_inputs, pnames.index("Sensory_relay"), 0))
+    model.clear_history()
+
+    i = model.pnames.index("Sensory_relay")
+    # no SI
+    model.run(T_no_stim, input=put(external_inputs, i, 0))
+    # long SI
+    model.run(T_long_stim, input=put(external_inputs, i, amp))
+    # short SI
+    for n in range(n_stim):
+        model.run(interim_T + int(n>0) * 2 * np.random.randn(), input=put(external_inputs, i, 0.0))
+        model.run(stim_duration, input=put(external_inputs, i, amp))
+    model.run(5, input=put(external_inputs, i, 0.0))
     return None

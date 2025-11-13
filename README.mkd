@@ -1,0 +1,9 @@
+Hand for simulations of progressively built models for breathing and swallowing interactions.
+
+Model parameters are descibed in rCPGswCPG/model_params
+Each file generates pickle file with model parameters that then could be then loaded.
+
+rCPGswCPG/protocols/protocols.py defines experimental schedules for external stimulation (similar to real experiments).
+see run_model.py for one example and
+experiments/variation_single_param.py for another example.
+

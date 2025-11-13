@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import os
 from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.construct_model import construct_model
-from rCPGswCPG.protocols.protocols import run_full_protocol, run_KF_inhibited_protocol
+from rCPGswCPG.protocols.protocols import run_standalone_protocol
 from rCPGswCPG.utils.gen_utils import get_project_root
 from rCPGswCPG.utils.utils import plot_data
 
@@ -27,8 +27,7 @@ pnames = model_params["pnames"]
 # model.populations[pnames.index("KF_phasic")].drive = 0.6
 # model.populations[pnames.index("KF_gate")].drive = 0.6
 
-run_full_protocol(model)
-# run_KF_inhibited_protocol(model)
+run_standalone_protocol(model)
 
 # collecting data
 v_history, m_history = model.get_raw_history()

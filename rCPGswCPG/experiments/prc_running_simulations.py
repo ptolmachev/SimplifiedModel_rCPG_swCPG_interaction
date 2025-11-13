@@ -2,12 +2,10 @@
 Prepares the data necessary for the PRC extraciton
 the actual PRC extraction goes in PRC_estimation project ('PRC_extraction_CPGswCPG')
 '''
-
-from rCPGswCPG.Network_ import firing_rate
-from rCPGswCPG.protocols.protocols import run_full_protocol
+from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.utils.sp_utils import *
 from rCPGswCPG.construct_model import construct_model
-from rCPGswCPG.utils.gen_utils import create_dir_if_not_exist, get_project_root, put
+from rCPGswCPG.utils.gen_utils import get_project_root, put
 import numpy as np
 import pickle
 from tqdm.auto import tqdm
@@ -15,7 +13,7 @@ import os
 
 def run_model_apply_stimulus(model, t_stim_start, stim_duration, stim_amp, t_stop):
     external_inputs = np.zeros(model.N)
-    pnames = model.populations
+    pnames = model.pnames
     model.run(t_stim_start, input=put(external_inputs, pnames.index("Sensory_relay"), 0))
     model.run(stim_duration, input=put(external_inputs, pnames.index("Sensory_relay"), stim_amp))
     model.run(t_stop - (t_stim_start + stim_duration), input=put(external_inputs, pnames.index("Sensory_relay"), 0))
@@ -34,7 +32,7 @@ def get_stimuli_schedule(model_params, n_stim, t_settle, t_stop):
     # run the model without any stimulus for t_stop time
     recordings = run_model_apply_stimulus(model=model, t_stim_start=0, stim_duration=0, stim_amp=0, t_stop=t_stop)
     # start from the end of expiration (begin of inspiration)
-    pnames = model.populations
+    pnames = model.pnames
     Insp = recordings["fr_history"][t_settle_inds:, pnames.index("Insp")]
     t = recordings["t"][t_settle_inds:] * 1000 # to be in ms rather than in sec
     T = get_period(t, Insp)
@@ -141,7 +139,7 @@ if __name__ == '__main__':
 
     root_folder_save_recordings_to = os.path.join(data_path, "experiments", "PRC_experiments",
                                        model_name, f"PRC_{stim_descriptor}_stim")
-    create_dir_if_not_exist(root_folder_save_recordings_to)
+    os.makedirs(root_folder_save_recordings_to, exist_ok=True)
 
     for stim_duration in stim_durations:
         for amp in stim_amps:
@@ -149,5 +147,5 @@ if __name__ == '__main__':
             experiment_params["stim_duration"] = stim_duration
             print(amp, stim_duration)
             folder_recordings = os.path.join(root_folder_save_recordings_to, f"num_run_{stim_descriptor}_stim_{amp}_{stim_duration}")
-            create_dir_if_not_exist(folder_recordings)
+            os.makedirs(folder_recordings, exist_ok=True)
             run_simulations(experiment_params, model_params, stim_schedule_data, folder_recordings)
