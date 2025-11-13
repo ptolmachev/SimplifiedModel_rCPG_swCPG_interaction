@@ -116,6 +116,7 @@ def run_KF_inhibited_protocol(model):
     return None
 
 
+# define your own protocol function if needed
 def run_standalone_protocol(model, amp = 0.40, stim_duration=0.1, T_transient=15, T_no_stim=30, T_long_stim=10, interim_T=10, n_stim=4):
     pnames = model.pnames
     external_inputs = np.zeros(len(pnames))

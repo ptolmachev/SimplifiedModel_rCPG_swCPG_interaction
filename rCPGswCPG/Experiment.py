@@ -46,12 +46,6 @@ class Experiment:
         with open(os.path.join(self.base_folder, "description.txt"), "w+") as f: f.write(self.description)
         pickle.dump(config_dict, open(os.path.join(self.base_folder, "config_file.pkl"), "wb+"))
 
-    # factories (used by parallel runner)
-    def build_model(self): return construct_model(self.model_params)
-    def build_protocols(self, model):
-        names = list(self.protocol_dict.keys()); params = list(self.protocol_dict.values())
-        return [construct_protocol(model, names[i], params[i]) for i in range(len(names))]
-
     # robust setter that accepts: W["A","B"], W[A,B], W[2,5], or self.model.pnames.index("A") forms
     _name_re = re.compile(r'index\(\s*["\']([^"\']+)["\']\s*\)')
     _w_re    = re.compile(r'W\s*\[\s*(.+?)\s*,\s*(.+?)\s*\]')
@@ -113,23 +107,34 @@ class Experiment:
         os.makedirs(save_dir, exist_ok=True)
         if os.listdir(save_dir) and not rerun:
             print(f"Warning: The directory {save_dir} is not empty"); return None
-
+        if self.param_points is None or (hasattr(self.param_points, "__len__") and len(self.param_points) == 0):
+            self.param_points = [None]
         for i, vals in tqdm(enumerate(self.param_points), total=len(self.param_points),
                             desc="Running experiments for parameter points"):
-            self.set_params_batch(self.varied_params, vals)
-            rec = {"param_point": vals, "protocol_runs": {}}
-            fname = f"{str(i).zfill(3)}_recordings_{array2str(vals)}.pkl"
+            if not self.varied_params is None and len(self.varied_params) > 0:
+                self.set_params_batch(self.varied_params, vals)
+                rec = {"param_point": vals, "protocol_runs": {}}
+                fname = f"{str(i).zfill(3)}_recordings_{array2str(vals)}.pkl"
+            else:
+                rec = {"param_point": None, "protocol_runs": {}}
+                fname = f"{str(i).zfill(3)}_recordings_default_params.pkl"
+            
             for prot in self.protocols:
-                if hasattr(self.model, "clear_history"): self.model.clear_history()
+                if hasattr(self.model, "clear_history"):
+                    self.model.clear_history()
                 prot.run()
                 rec["protocol_runs"][prot.name] = self.model.get_recordings()
-            with open(os.path.join(save_dir, fname), "wb+") as f: pickle.dump(rec, f, protocol=pickle.HIGHEST_PROTOCOL)
+            with open(os.path.join(save_dir, fname), "wb+") as f:
+                pickle.dump(rec, f, protocol=pickle.HIGHEST_PROTOCOL)
         return None
 
 
     def analyse_data(self):
         data_table = {"columns": ["Ti", "Ti_std", "Te", "Te_std", "Ttot", "Ttot_std", "spont_swallows",
                                   "N_sw", "N_br", "time_to_1st_sw", "time_to_2nd_sw", "N_sw_shortSI", "PIR"]}
+        if self.varied_params is None or len(self.varied_params) == 0:
+            print("No varied params; skipping analysis")
+            return None
         for n in self.varied_params: data_table["columns"].append(n)
         data_table_vals = []
         for i, param_point in tqdm(enumerate(self.param_points)):
@@ -171,7 +176,7 @@ class Experiment:
         pickle.dump(deepcopy(data_table), open(os.path.join(self.base_folder, "data_table.pkl"), "wb+"))
         return None
 
-    def plot_traces(self, param_names_tuple):
+    def plot_traces(self, param_names_tuple, show=False):
         files = os.listdir(os.path.join(self.data_folder, "recordings"))
         for i, file in enumerate(files):
             rec_file = os.path.join(self.data_folder, "recordings", file)
@@ -184,9 +189,12 @@ class Experiment:
             param_point = recordings["param_point"]
             VNA_components = {"KF_phasic": 1.0, "Sw1": 0.6, "Insp": 0.65}
             fig, axes = plot_data(t, fr, self.model.pnames, self.model.pnames, VNA_components)
-            fig.suptitle(f"{param_names_tuple} = {array2str(param_point)}", fontsize=25)
+
+            if not (param_names_tuple is None) and (hasattr(self.param_points, "__len__") and len(self.param_points) == 0):
+                    fig.suptitle(f"{param_names_tuple} = {array2str(param_point)}", fontsize=25)
             name = f"recordings_{array2str(param_point)}"
             plt.savefig(os.path.join(self.img_folder, f"{str(i).zfill(3)}_{name}.png"))
+            if show: plt.show(block=True)
             plt.close(fig)
         return None
 

@@ -1,6 +1,6 @@
 '''
 Prepares the data necessary for the PRC extraciton
-the actual PRC extraction goes in PRC_estimation project ('PRC_extraction_CPGswCPG')
+the actual PRC extraction goes in prc_extraction/run_prc_extraction.py
 '''
 from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.utils.sp_utils import *
@@ -47,9 +47,13 @@ def get_stimuli_schedule(model_params, n_stim, t_settle, t_stop):
     stim_schedule_data["t_start_insp"] = t_start_insp
     stim_schedule_data["t_end_insp"] = t_end_insp
     stim_schedule_data["stim_times"] = stim_times
-    #save the stimuli schedule to a separate file
-    path_to_save = os.path.join(data_folder, "auxiliary_data", f"stim_schedule_{model_name}.pkl")
-    pickle.dump(stim_schedule_data, open(path_to_save, "wb+"))
+
+    # save the stimuli schedule to a separate file
+    folder2save = os.path.join(data_folder, "auxiliary_data")
+    os.makedirs(folder2save, exist_ok=True)
+    path2save = os.path.join(folder2save, f"stim_schedule_{model_name}.pkl")
+
+    pickle.dump(stim_schedule_data, open(path2save, "wb+"))
     return None
 
 def run_simulations(experiment_params, model_params, stim_schedule_data, folder_save_to):
@@ -101,7 +105,7 @@ if __name__ == '__main__':
 
     experiment_params = {}
     experiment_params["t_stop"] = t_stop = 75 #s
-    experiment_params["n_stim"] = n_stim = 100
+    experiment_params["n_stim"] = n_stim = 100 # number of uniformly spaces phases (from 0 to 2pi) at which the stimulus will be applied
     experiment_params["t_settle"] = t_settle = 20 #s
     experiment_params["N_cycles"] = 5
     model_name = "model_complex"

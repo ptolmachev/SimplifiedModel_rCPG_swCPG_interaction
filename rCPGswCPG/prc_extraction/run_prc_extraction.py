@@ -7,12 +7,11 @@ from tqdm.auto import tqdm
 from rCPGswCPG.prc_extraction.prc_extraction_subroutines.prc_extraction_linear_fit import get_phase_shift
 from rCPGswCPG.prc_extraction.prc_extraction_subroutines.filtering_utils import fit_by_fourier
 from rCPGswCPG.prc_extraction.prc_extraction_subroutines.phase_extraction import extract_protophase, extract_phase
-from rCPGswCPG.utils.gen_utils import get_files, get_project_root, create_dir_if_not_exist
+from rCPGswCPG.utils.gen_utils import get_files, get_project_root
 import pickle
 import os
 import matplotlib as mpl
 mpl.use('MacOSX')  # on macOS built-in backend
-
 
 def scale(s):
     return (s - np.min(s)) / (np.max(s) - np.min(s))
@@ -22,14 +21,15 @@ def run_PRC_estimation(data_folder, save_to_filename):
     data_delta_phi = []
     # list all the files which contain some specific pattern "run_" and then go through all of them
     files = get_files(data_folder, pattern="run_")
-    for i, file in tqdm(enumerate(files)):
-        data = pickle.load(open(f'{data_folder}/{file}', "rb+"))
+    for i, file in tqdm(enumerate(files), total=len(files), desc="Processing recordings for PRC estimation"):
+        data = pickle.load(open(os.path.join(data_folder, file), "rb+"))
         signals = data["signals"]
         t = data["t"]
         dt = data["dt"]
         t_stim_start = data["t_stim_start"]
         stim_duration = data["stim_duration"]
-        pnames = data["population_names"]
+        pnames = [p.name for p in data["population_names"]]
+        print(pnames)
         # inp = signals[:, pnames.index("Sensory_relay")]
         # stim_start_ind = int(np.where((inp) > 0.5)[0][0]) + 1
         Insp = signals[:, pnames.index("Insp")]
@@ -56,8 +56,8 @@ def run_PRC_estimation(data_folder, save_to_filename):
         # for the plotting purposes (to have an actual signal on the background)
         Insp_ = Insp_[inds[0]:inds[1]]
         RampI_ = RampI_[inds[0]:inds[1]]
-        max_val = 1.5 * np.pi #np.max(prc_data['delta_phi'])
-        min_val = -1.5 * np.pi#np.min(prc_data['delta_phi'])
+        max_val = 1.5 * np.pi # np.max(prc_data['delta_phi'])
+        min_val = -1.5 * np.pi # np.min(prc_data['delta_phi'])
         Insp_scaled = scale(Insp_) * (max_val - min_val) + min_val
         RampI_scaled = scale(RampI_) * (max_val - min_val) + min_val
 
@@ -67,11 +67,13 @@ def run_PRC_estimation(data_folder, save_to_filename):
         prc_data['Insp'] = Insp_scaled
         prc_data['RampI'] = RampI_scaled
         root_folder = get_project_root()
-        create_dir_if_not_exist(os.path.join(root_folder, "data", "processed_data"))
+        os.makedirs(os.path.join(root_folder, "data", "processed_data"), exist_ok=True)
+        # Saves the (phi - phase of the stimulation, delta_phi - phase shift) points as data as well as the scaled Insp and RampI signals for visualization
         pickle.dump(prc_data, open(os.path.join(root_folder, "data", "processed_data", save_to_filename), "wb+"))
     return None
 
 if __name__ == '__main__':
+    # first one needs to run the experiments in experiments/prc_running_simulations.py
     #RUNNING THE PRC EXTRACTION
     data_folder = os.path.join(get_project_root(), "data",
                              "experiments",
