@@ -163,14 +163,14 @@ Pre- and post-stimulus phase trajectories were each described by linear fits $\p
 \subsection{Model parameters}
 Previous studies that modeled R-CPG function incorporated Hodgkin-Huxley style biophysical properties of respiratory neurons \citep{smith2007spatial, rubin2009multiple, molkov2013control, molkov2014closed, molkov2017computational}. However, such models are prone to overfitting \citep{del2018breathing}. Instead of using Hodgkin-Huxley style description, we model neuronal populations with simpler equations underlying the Matsuoka neural oscillator \citep{matsuoka2011analysis}; which allows the R-CPG and Sw-CPG to function with a reduced parameter set, focusing on their interaction:
 \begin{align*}
- \tau_v \frac{dv}{dt} &= -\alpha v - m + (\text{drive} - b)+\text{input} \\
- \tau_m \frac{dm}{dt} &= s(v) - m, 
+ \tau_v \frac{dv}{dt} &= -v - m + (\text{drive} - b)+\text{input} \\
+ \tau_m \frac{dm}{dt} &= f(v) - m,
 \end{align*}
-where $s(v) = 1/(1+e^{-v/v_0} )$ - activity level of a population, $s(v) \in (0,1)$.
-In these equations, the dimensionless variable v is analogous to the average membrane potential of a whole neural population. The variable $m$ mediates the firing rate (spike frequency) adaptation and acts on a much slower timescale than the variable $v$. To account for the correct timescale of the dynamics and the excitability of the neuronal populations, we use $\alpha=1$, $b=0.2$, $\tau_v=2$~ms, $v_0=1/30\approx0.033$. The parameter $\tau_m$, which controls the timescale of firing rate adaptation, has distinct values for the different neuronal populations (discussed later), and the details are summarized in \Tableref{tbl: intrinsic_params}. The parameters are chosen manually to match the timescale of respiratory phase durations (inspiration, postinspiration, late expiration) of experimental recordings.
+where $f(v) = 1/(1+e^{-s v} )$ - activity level of a population, $f(v) \in (0,1)$.
+In these equations, the dimensionless variable v is analogous to the average membrane potential of a whole neural population. The variable $m$ mediates the firing rate (spike frequency) adaptation and acts on a much slower timescale than the variable $v$. To account for the correct timescale of the dynamics and the excitability of the neuronal populations, we use $b=0.2$, $\tau_v=2$~ms, $s=30$. The parameter $\tau_m$, which controls the timescale of firing rate adaptation, has distinct values for the different neuronal populations (discussed later), and the details are summarized in \Tableref{tbl: intrinsic_params}. The parameters are chosen manually to match the timescale of respiratory phase durations (inspiration, postinspiration, late expiration) of experimental recordings.
 The term `input' in the equations incorporates synaptic input from the other nodes of the neuronal populations of the R-CPG or Sw-CPG, as well as the sensory input from the SLN (applicable only to the Sensory Relay neurons, see later). The synaptic input to population j is modeled by the following equation:
 \begin{align*}
- \text{input}_j = \sum_{i \in C}^N w_{ij} s(v_i) +\text{stimulus}_j 
+ \text{input}_j = \sum_{i \in C}^N w_{ij} f(v_i) +\text{stimulus}_j
 \end{align*}
 Where $C$ is the set of neural nodes projecting to the $j^{th}$ neuron.
 The stimulus term represents a square pulse input applied to `Sensory Relay' neurons during SLN stimulation.
@@ -208,7 +208,7 @@ Both scenarios differ only in the strengths of the sensory input to the swallowi
 
 To study the difference between these scenarios we performed a phase space analysis of the dynamics of the Sw-CPG. The evolution timescales of $v$-variables and $m$-variables differ by three orders of magnitude. Therefore, the whole system can be subdivided into fast and slow subsystems. During the evolution, the $v_1$ and $v_2$ variables are almost functionally dependent, $v_1 \approx f(v_2)$; therefore, one of the fast variables could be eliminated from the analysis, and the dynamics are effectively described in the three-dimensional phase space.
 For each fixed pair of slow $m$-variables $(m_1,m_2)$, we calculated fixed points of the fast subsystem dynamics $(v_1^*,v_2^*)$, which form a surface. The equilibrium surface in $(m_1,m_2,v_1)$-space forms a cusp (\Figref[B]{fig: PIR_mechanism}), a region where the surface folds back on itself so that multiple values of one variable correspond to the same parameter set. This S-shaped structure implies the presence of two stable equilibria on the outer sheets and one unstable equilibrium on the middle sheet.
-In the global equilibrium (Point 1 in \Figref[A,B]{fig: PIR_mechanism}), the system stays on the lower sheet of the equilibrium surface, albeit close to the cusp (lower knee of `S', just before the cusp). The location of the global equilibrium corresponds to the quiescent `$\text{Sw}_1$’ neurons, since the value $s(v_1)$ is close to zero, although the system is readily excitable.
+In the global equilibrium (Point 1 in \Figref[A,B]{fig: PIR_mechanism}), the system stays on the lower sheet of the equilibrium surface, albeit close to the cusp (lower knee of `S', just before the cusp). The location of the global equilibrium corresponds to the quiescent `$\text{Sw}_1$’ neurons, since the value $f(v_1)$ is close to zero, although the system is readily excitable.
 
 In the first scenario, the stimulus drives the system away from the lower sheet of the equilibrium surface into the region of the overhanging upper sheet. The state then jumps `vertically' (along $v_1$ axis) to the upper sheet, from which it gradually slides down until it reaches the boundary of the cusp. While on the upper sheet, the variable $v_1$---representing activity of the premotor $\text{Sw}_1$ neurons---remains elevated, indicating a solitary swallowing response. Once the state reaches the cusp, it abruptly falls back to the lower sheet, corresponding to termination of the solitary swallow (\Figref[A,B]{fig: PIR_mechanism}, points 1-2-3-4). In contrast, in the second scenario, the stimulus shifts the system away from the upper sheet, and once the input ceases, the state immediately relaxes back to the lower sheet (where $\text{Sw}_1$ remains quiescent), producing no transient post-stimulus activity (\Figref[C,D]{fig: PIR_mechanism}, points 1-2-3).
 In the model, the swallowing response is therefore determined by the cusp-like shape of the equilibrium surface of the fast subsystem, implementing post-inhibitory rebound of the premotor swallowing population.
@@ -442,7 +442,7 @@ Sensory Relay & 17500 \\
 Pont. Post-I & 10000 \\
 Sw. gate & 5000 \\ \hline
 \end{tabular}
-\captionof{table}{Intrinsic parameters. For all populations: $\alpha=1$, $b=0.2$, $\tau_v=2$~ms, $v_0\approx0.033$.}\label{tbl: intrinsic_params}
+\captionof{table}{Intrinsic parameters. For all populations: $b=0.2$, $\tau_v=2$~ms, $s=30$.}\label{tbl: intrinsic_params}
 \end{center}
 % \backmatter
 % \bmhead{Supplementary information}
