@@ -10,9 +10,10 @@ from scipy.signal import savgol_filter as sg
 if __name__ == '__main__':
     # ---- experiment config (indices & windows) ----
     stim_start_ind, stim_end_ind = 15000, 25000
-    t1, t2, t3, t4 = 6600, 7040, 8168, 9080
+    t1, t2, t3, t4 = 6600, 7040, 8168, 9230
     experiment_ind_start, experiment_ind_end = 5600, 18900
     simulation_ind_start, simulation_ind_end = 0, -1
+    settle_time = 29.2  # sec; for the best visual match with experiment
     rerun = True
     exp_folder = os.path.abspath(
         r"/Users/tolmach/Documents/GitHub/Exp_Data_Processing_rCPG/data/sln_prc_filtered/2019-08-22_15-59-55_t1")
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     # ---- simulation (cached) ----
     sim_path = os.path.join(get_project_root(), "data", f"ExpEupnVsSimEupn_recordings_eupneic.pkl")
     if not os.path.exists(sim_path) or rerun:
-        rec = run_sim(mode='eupneic', settle_time=29.37) # for the best visual match with experiment
+        rec = run_sim(mode='eupneic', settle_time=settle_time) # for the best visual match with experiment
         with open(sim_path, 'wb') as f:
             pickle.dump(rec, f)
     with open(sim_path, 'rb') as f:
