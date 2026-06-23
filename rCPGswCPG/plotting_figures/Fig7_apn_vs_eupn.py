@@ -4,13 +4,9 @@ import os
 import pickle
 from rCPGswCPG.plotting_figures.plotting_utils import run_sim, resample, plot_recordings
 from rCPGswCPG.utils.gen_utils import get_project_root
-import matplotlib as mpl
-mpl.use('MacOSX')  # on macOS built-in backend
-# mpl.use('QtAgg')  # if you have PyQt5/PySide6 installed
-from matplotlib import pyplot as plt
 
 if __name__ == '__main__':
-    rerun = False
+    rerun = True
     modes = ['eupneic', 'apneustic']
 
     recordings = {}

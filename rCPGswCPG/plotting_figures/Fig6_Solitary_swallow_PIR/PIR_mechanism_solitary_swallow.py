@@ -2,14 +2,12 @@ import numpy as np
 import pickle
 from matplotlib import pyplot as plt
 import os
-from rCPGswCPG.Network_ import firing_rate
+from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.Network import construct_model
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.utils.gen_utils import get_project_root
 
-#test
-model_name = "swHCO"
-param_folder = os.path.join(f'{get_project_root()}', 'data', 'model_params')
-model_params = pickle.load(open(os.path.join(f'{param_folder}', f'params_{model_name}.pkl'), 'rb+'))
+model_params = model_params_from_cfg(load_model_cfg_file("swHCO"))
 model = construct_model(model_params)
 external_inputs = np.zeros(model_params["N"])
 pnames = model_params["pnames"]
@@ -25,7 +23,7 @@ model.run(T_afterstim, input=np.zeros(2))
 
 # collecting data
 v_history, m_history = model.get_raw_history()
-fr_history = firing_rate(v_history)
+fr_history = firing_rate(v_history, model.beta)
 t = (model.dt * np.arange(fr_history.shape[0]) / 1000)  # in sec
 t_start = int((T_no_stim * (1000 / model.dt) - 1500))
 
@@ -37,4 +35,5 @@ ax.axvline(T_no_stim + T_stim, alpha = 0.1)
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 plt.legend()
+plt.savefig(os.path.join(get_project_root(), "img", "PIR_mechanism_solitary_swallow.pdf"), bbox_inches='tight')
 plt.show()

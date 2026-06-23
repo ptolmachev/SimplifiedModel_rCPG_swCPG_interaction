@@ -3,8 +3,9 @@ import numpy as np
 import os
 from scipy.interpolate import interp1d
 from matplotlib import pyplot as plt
-from rCPGswCPG.Network_ import firing_rate
+from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.Network import construct_model
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.utils.gen_utils import get_project_root
 
 # ------- helpers
@@ -47,10 +48,7 @@ def run_sim(mode='eupneic',
             B4StimDuration=15.0,
             StimDuration=10.0,
             AfterStimDuration=15.0):
-    model_name   = 'model_complex'
-    param_folder = os.path.join(get_project_root(), 'data', 'model_params')
-    with open(os.path.join(param_folder, f'params_{model_name}.pkl'), 'rb') as f:
-        mp = pickle.load(f)
+    mp = model_params_from_cfg(load_model_cfg_file('complex'))
 
     model   = construct_model(mp)
     pnames  = mp['pnames']
@@ -69,7 +67,7 @@ def run_sim(mode='eupneic',
                   (AfterStimDuration, 0.0)])
 
     v, m = model.get_raw_history()
-    fr = firing_rate(v)
+    fr = firing_rate(v, model.beta)
     t_sim = mp['dt'] * np.arange(fr.shape[0]) / 1000.0  # seconds
 
     rec = build_recordings(fr, pnames)

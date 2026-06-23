@@ -31,17 +31,22 @@ if __name__ == '__main__':
     pnames = rec['pnames']
     neural_traces = {pname: rec[pname] for pname in pnames}  # keep names and traces aligned
 
-    # ---- experimental data ----
-    exp_PNA = pickle.load(open(os.path.join(exp_folder, "100_CH10_processed.pkl"), "rb"))["signal"]
-    exp_VNA = pickle.load(open(os.path.join(exp_folder, "100_CH15_processed.pkl"), "rb"))["signal"]
+    # ---- experimental data (optional: lives in a separate repo; skip if absent) ----
+    have_exp = os.path.exists(os.path.join(exp_folder, "100_CH10_processed.pkl"))
+    if have_exp:
+        exp_PNA = pickle.load(open(os.path.join(exp_folder, "100_CH10_processed.pkl"), "rb"))["signal"]
+        exp_VNA = pickle.load(open(os.path.join(exp_folder, "100_CH15_processed.pkl"), "rb"))["signal"]
+    else:
+        print(f"[Fig4] experimental data not found at {exp_folder}; producing simulation panels only")
 
     # ---- unify lengths (resample to common grid) ----
     interp_length = 40000
     t_new = np.linspace(0, interp_length, interp_length)
     PNA_s = resample(sim_PNA[simulation_ind_start:simulation_ind_end], t_new, interp_length)
     VNA_s = resample(sim_VNA[simulation_ind_start:simulation_ind_end], t_new, interp_length)
-    PNA_e = resample(sg(exp_PNA[experiment_ind_start:experiment_ind_end], 51, 3), t_new, interp_length)
-    VNA_e = resample(sg(exp_VNA[experiment_ind_start:experiment_ind_end], 51, 3), t_new, interp_length)
+    if have_exp:
+        PNA_e = resample(sg(exp_PNA[experiment_ind_start:experiment_ind_end], 51, 3), t_new, interp_length)
+        VNA_e = resample(sg(exp_VNA[experiment_ind_start:experiment_ind_end], 51, 3), t_new, interp_length)
 
     # ---- common styling ----
     times = [t1, t2, t3, t4]
@@ -51,14 +56,15 @@ if __name__ == '__main__':
 
     # ---- plot nerves (simulation vs experiment) ----
     data_sim = {'PNA': PNA_s, 'VNA': VNA_s}
-    data_exp = {'PNA': PNA_e, 'VNA': VNA_e}
     ylims_sim = {k: (-0.01, 1.05 * np.max(v)) for k, v in data_sim.items()}
-    ylims_exp = {k: (-0.01, 1.05 * np.max(v)) for k, v in data_exp.items()}
 
-    plot_recordings(time_points=t_new, data=data_exp, keys=['PNA', 'VNA'], color_map=colors,
-                    label_map={'PNA': 'PNA, experiment', 'VNA': 'VNA, experiment'},
-                    phase_spans=spans, phase_times=times, stim_start=stim_start_ind, stim_end=stim_end_ind,
-                    ylims=ylims_exp, outpath=os.path.join(img_folder, "eupneic_motor_outputs_experiment.pdf"))
+    if have_exp:
+        data_exp = {'PNA': PNA_e, 'VNA': VNA_e}
+        ylims_exp = {k: (-0.01, 1.05 * np.max(v)) for k, v in data_exp.items()}
+        plot_recordings(time_points=t_new, data=data_exp, keys=['PNA', 'VNA'], color_map=colors,
+                        label_map={'PNA': 'PNA, experiment', 'VNA': 'VNA, experiment'},
+                        phase_spans=spans, phase_times=times, stim_start=stim_start_ind, stim_end=stim_end_ind,
+                        ylims=ylims_exp, outpath=os.path.join(img_folder, "eupneic_motor_outputs_experiment.pdf"))
 
     plot_recordings(time_points=t_new, data=data_sim, keys=['PNA', 'VNA'], color_map=colors,
                     label_map={'PNA': 'PNA, simulation', 'VNA': 'VNA, simulation'},
