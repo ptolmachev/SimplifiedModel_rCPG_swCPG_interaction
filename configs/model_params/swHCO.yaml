@@ -1,0 +1,22 @@
+dt: 0.2
+
+pnames:
+  - Sw1
+  - Sw2
+
+tau:
+  Sw1: 1500
+  Sw2: 1500
+
+neuron_defaults:
+  alpha: 0.01
+  bias: -0.2
+  tau_v: 0.005
+
+connections:
+  "(Sw2, Sw1)": -0.9
+  "(Sw1, Sw2)": -0.65
+
+drives_misc:
+  "(Sw1, wakefulness)": 0.175
+  "(Sw2, wakefulness)": 0.35

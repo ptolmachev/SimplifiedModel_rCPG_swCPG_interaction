@@ -31,11 +31,11 @@ v_history, m_history = model.get_raw_history()
 v_history = v_history.T
 m_history = m_history.T
 fr_history = firing_rate(v_history)
-net_inputs = (model.W.T @ fr_history) + np.array([model.populations[i].drive for i in range(model.N)]).reshape(-1, 1)
-net_inputs[pnames.index("Sw1")] -= model.W[pnames.index("Sw2"), pnames.index("Sw1")] * fr_history[pnames.index("Sw2")]
-net_inputs[pnames.index("Sw2")] -= model.W[pnames.index("Sw1"), pnames.index("Sw2")] * fr_history[pnames.index("Sw1")]
-SR2Sw1 = model.W[pnames.index("Sensory_relay"), pnames.index("Sw1")] * fr_history[pnames.index("Sensory_relay")]
-SR2Sw2 = model.W[pnames.index("Sensory_relay"), pnames.index("Sw2")] * fr_history[pnames.index("Sensory_relay")]
+net_inputs = (model.W @ fr_history) + np.array([model.populations[i].drive for i in range(model.N)]).reshape(-1, 1)
+net_inputs[pnames.index("Sw1")] -= model.W[pnames.index("Sw1"), pnames.index("Sw2")] * fr_history[pnames.index("Sw2")]
+net_inputs[pnames.index("Sw2")] -= model.W[pnames.index("Sw2"), pnames.index("Sw1")] * fr_history[pnames.index("Sw1")]
+SR2Sw1 = model.W[pnames.index("Sw1"), pnames.index("Sensory_relay")] * fr_history[pnames.index("Sensory_relay")]
+SR2Sw2 = model.W[pnames.index("Sw2"), pnames.index("Sensory_relay")] * fr_history[pnames.index("Sensory_relay")]
 
 t = (model.dt * np.arange(fr_history.shape[1]) / 1000)  # in sec
 t_start = int((T_no_stim * (1000 / model.dt) - 1500))

@@ -1,0 +1,30 @@
+defaults:
+  - model_params: complex
+  - _self_
+
+experiment:
+  name: Intact_full_model_test
+  description: Intact full model test
+  protocol_dict:
+    Protocol_noSI:
+      T: 30
+    Protocol_longSI:
+      T: 10
+      amp: 0.45
+    Protocol_shortSI:
+      interim_T: 10
+      amp: 0.45
+      stim_duration: 0.1
+    Protocol_LongShortSI:
+      noSI_T: 10
+      longSI_T: 10
+      interim_T: 10
+      amp: 0.45
+      stim_duration: 0.1
+      n_stim: 1
+
+hydra:
+  run:
+    dir: .
+  job:
+    chdir: false

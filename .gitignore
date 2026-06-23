@@ -20,3 +20,7 @@ rCPGswCPG/.DS_Store
 *.pkl
 *.pkl
 *.pyc
+# Hydra run output and run artifacts
+/.hydra
+*.log
+/.vscode

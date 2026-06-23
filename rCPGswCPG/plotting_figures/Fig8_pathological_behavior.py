@@ -23,10 +23,10 @@ external_inputs = np.zeros(model_params["N"])
 pnames = model_params["pnames"]
 # Modifications
 if mod == 'insp_breakthroughs':
-    model.W[pnames.index("Sensory_relay"), pnames.index("Insp")] = -0.22
-    model.W[pnames.index("Sensory_relay"), pnames.index("RampI")] = -0.22
+    model.W[pnames.index("Insp"), pnames.index("Sensory_relay")] = -0.22
+    model.W[pnames.index("RampI"), pnames.index("Sensory_relay")] = -0.22
 elif mod == 'weak_swallow':
-    model.W[pnames.index("Sensory_relay"), pnames.index("Sw1")] = 0.05
+    model.W[pnames.index("Sw1"), pnames.index("Sensory_relay")] = 0.05
 
 recordings_file_name = os.path.join(get_project_root(), "data", f"recordings_{mod}.pkl")
 if not os.path.exists(recordings_file_name) or rerun:

@@ -10,15 +10,15 @@ class Neuron():
     '''
     A neuron class with simple continuous dynamics exhibiting firing rate adaptation
     '''
-    def __init__(self, name, drive, tau):
+    def __init__(self, name, drive, tau, alpha=0.01, bias=-0.2, tau_v=0.005):
         self.name = name
         self.state = np.zeros(2)
         self.state_history = deque()
         self.drive = drive
         self.tau = tau
-        self.alpha = 0.01
-        self.bias = -0.2
-        self.tau_v = 0.005
+        self.alpha = alpha
+        self.bias = bias
+        self.tau_v = tau_v
 
     def rhs(self, inp):
         v, m = self.state
@@ -67,7 +67,7 @@ class Neuron():
 
 #     def get_synaptic_inputs(self):
 #         fr = self.get_fr()
-#         synaptic_inputs = (self.W.T @ fr.reshape(-1, 1)).flatten()
+#         synaptic_inputs = (self.W @ fr.reshape(-1, 1)).flatten()
 #         return synaptic_inputs
 
 #     def step(self, external_inputs):
@@ -114,7 +114,6 @@ class Network:
         self.N = len(populations)
         self.dt = float(dt)
         self.W = np.asarray(W, dtype=float)
-        self.WT = self.W.T
 
         # pull per-neuron constants once
         self.pnames = [p.name for p in populations]
@@ -139,7 +138,7 @@ class Network:
         return firing_rate(self.v)
 
     def get_synaptic_inputs(self):
-        return (self.WT @ self.get_fr().reshape(-1, 1)).ravel()
+        return (self.W @ self.get_fr().reshape(-1, 1)).ravel()
 
     def _push_history(self):
         # keep vectorized buffers
@@ -163,7 +162,7 @@ class Network:
 
         def rhs(v, m):
             fr  = firing_rate(v)
-            syn = self.WT @ fr
+            syn = self.W @ fr
             rv  = (-self.alpha * v - m + (self.drive + self.bias) + syn + ext) / self.tau_v
             rm  = (fr - m) / self.tau
             return rv, rm
@@ -213,29 +212,9 @@ class Network:
         
     def sync_params(self):
         self.W  = np.asarray(self.W, dtype=np.float64)  # force stable dtype
-        self.WT = self.W.T
         self.drive = np.array([p.drive for p in self.populations], dtype=np.float64)
         self.tau   = np.array([p.tau   for p in self.populations], dtype=np.float64)
         self.tau_v = np.array([p.tau_v for p in self.populations], dtype=np.float64)
-
-
-if __name__ == '__main__':
-    # simple demo
-    dt = 0.75
-    drives = np.ones(2)
-    nrn1 = Neuron(name="1", drive=drives[0], tau=1500)
-    nrn2 = Neuron(name="2", drive=drives[1], tau=1500)
-    W = np.array([[0, -0.7] ,[-0.5, 0]])
-    net = Network(populations=[nrn1, nrn2], dt=dt, W=W)
-    net.run(T=10, input=np.zeros(2))
-    data_dict = net.get_recordings()
-
-    fig, ax = plt.subplots(figsize=(6, 3))
-    ax.plot(data_dict['t'], data_dict["fr_history"])
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    plt.legend(['population1', 'population2'], loc=(0.75, 0.75), frameon=False)
-    plt.show()
 
 
 

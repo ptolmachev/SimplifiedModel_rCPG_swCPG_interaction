@@ -1,0 +1,69 @@
+dt: 0.5
+
+pnames:
+  - Insp
+  - RampI
+  - Exp
+  - LateExp
+  - Sw1
+  - Sw2
+  - Sensory_relay
+  - KF_phasic
+  - KF_gate
+
+tau:
+  Insp: 5000
+  RampI: 5000
+  Exp: 5000
+  LateExp: 5000
+  Sw1: 1500
+  Sw2: 1500
+  Sensory_relay: 17500
+  KF_phasic: 10000
+  KF_gate: 5000
+
+neuron_defaults:
+  alpha: 0.01
+  bias: -0.2
+  tau_v: 0.005
+
+connections:
+  "(Sw1, Sensory_relay)": 0.12
+  "(Sw2, Sensory_relay)": 0.07
+  "(KF_phasic, Sensory_relay)": 0.03
+  "(Insp, Sensory_relay)": -0.4
+  "(RampI, Sensory_relay)": -0.4
+  "(LateExp, Sensory_relay)": -0.4
+  "(Sw2, Sw1)": -0.9
+  "(Insp, Sw1)": -0.8
+  "(RampI, Sw1)": -0.8
+  "(LateExp, Sw1)": -0.2
+  "(Sw1, Sw2)": -0.65
+  "(Exp, Insp)": -0.2
+  "(LateExp, Insp)": -1.0
+  "(Sw1, Insp)": -0.01
+  "(KF_phasic, Insp)": -0.35
+  "(RampI, Insp)": -0.22
+  "(Insp, Exp)": -0.5
+  "(RampI, Exp)": -1.0
+  "(LateExp, Exp)": -1.3
+  "(KF_phasic, Exp)": 0.03
+  "(Exp, LateExp)": -0.01
+  "(KF_phasic, LateExp)": -0.65
+  "(Insp, LateExp)": -0.7
+  "(RampI, LateExp)": -0.75
+  "(Exp, KF_phasic)": 0.03
+  "(Sw1, KF_gate)": -0.15
+
+drives_misc:
+  "(Insp, CO2)": 0.3
+  "(RampI, CO2)": 0.3
+  "(LateExp, CO2)": 0.45
+  "(KF_phasic, CO2)": 0.05
+  "(Sw1, wakefulness)": 0.19
+  "(Sw2, wakefulness)": 0.35
+  "(KF_gate, wakefulness)": 0.25
+  "(Exp, pons)": 0.35
+  "(KF_phasic, pons)": 0.35
+  "(Insp, pons)": 0.05
+  "(RampI, pons)": 0.05

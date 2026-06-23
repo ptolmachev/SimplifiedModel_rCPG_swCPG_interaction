@@ -26,7 +26,7 @@ model.populations[model.populations.index("KF_gate")].drive = 0
 model.populations[model.populations.index("Exp")].drive = 0
 model.populations[model.populations.index("Insp")].drive = 0.3
 model.populations[model.populations.index("RampI")].drive = 0.3
-model.W[model.populations.index("Sensory_relay"), model.populations.index("KF_phasic")] = 0
+model.W[model.populations.index("KF_phasic"), model.populations.index("Sensory_relay")] = 0
 
 
 for i, amp in tqdm(enumerate(np.linspace(0, 0.4, 21))):

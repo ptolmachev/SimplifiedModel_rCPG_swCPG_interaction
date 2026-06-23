@@ -1,0 +1,40 @@
+dt: 0.2
+
+pnames:
+  - Insp
+  - Exp
+  - Sw1
+  - Sw2
+  - Sensory_relay
+
+tau:
+  Insp: 5000
+  Exp: 5000
+  Sw1: 1500
+  Sw2: 1500
+  Sensory_relay: 17500
+
+neuron_defaults:
+  alpha: 0.01
+  bias: -0.2
+  tau_v: 0.005
+
+connections:
+  "(Sw1, Sensory_relay)": 0.12
+  "(Sw2, Sensory_relay)": 0.07
+  "(Insp, Sensory_relay)": -0.4
+  "(Sw2, Sw1)": -0.9
+  "(Insp, Sw1)": -0.8
+  "(Sw1, Sw2)": -0.65
+  "(Exp, Insp)": -0.3
+  "(Sw1, Insp)": -0.01
+  "(Insp, Exp)": -0.7
+
+# Each '-' here starts one drive source row in drives_misc.
+# Multiple populations can appear in the same row (same source).
+drives_misc:
+  "(Insp, CO2)": 0.3
+  "(Sw1, wakefulness)": 0.16
+  "(Sw2, wakefulness)": 0.35
+  "(Exp, pons)": 0.35
+  "(Insp, pons)": 0.05

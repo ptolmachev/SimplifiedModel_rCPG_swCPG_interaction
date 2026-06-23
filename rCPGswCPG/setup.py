@@ -12,6 +12,7 @@ setup(
     install_requires=[
         'numpy',
         'matplotlib',
+        'hydra-core',
         # Add other dependencies as needed
     ],
     classifiers=[

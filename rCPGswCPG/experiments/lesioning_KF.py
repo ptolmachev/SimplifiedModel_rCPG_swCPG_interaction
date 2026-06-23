@@ -24,7 +24,7 @@ if __name__ == '__main__':
                                     "self.model.populations[self.model.pnames.index(\"Exp\")].drive",
                                     "self.model.populations[self.model.pnames.index(\"Insp\")].drive",
                                     "self.model.populations[self.model.pnames.index(\"RampI\")].drive",
-                                    "self.model.W[self.model.pnames.index(\"Sensory_relay\"),self.model.pnames.index(\"KF_phasic\")]"]
+                                    "self.model.W[self.model.pnames.index(\"KF_phasic\"),self.model.pnames.index(\"Sensory_relay\")]"]
     # runs the model 50 times, so it takes quite a while!
     config_dict["param_points"] = list(zip(np.linspace(0, 0.35, 50),
                                            np.linspace(0, 0.25, 50),

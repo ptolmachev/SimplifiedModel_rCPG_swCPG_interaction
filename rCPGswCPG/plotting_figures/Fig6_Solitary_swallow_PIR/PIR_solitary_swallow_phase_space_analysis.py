@@ -33,7 +33,7 @@ def rhs(vs, ms, ws, drives, inps):
     alpha = 0.01
     bias = -0.2
     fr = firing_rate(vs)
-    rhs_v = scale * (-alpha * vs - ms + (drives + bias) + ws.T @ fr + inps)
+    rhs_v = scale * (-alpha * vs - ms + (drives + bias) + ws @ fr + inps)
     return rhs_v
 
 def determine_stability(point, rhs_eq, ms, ws, drives, inps):
