@@ -28,6 +28,7 @@ def apply_mode(model, idx, mode):
         model.populations[idx['Exp']].drive    = 0.0
         model.populations[idx['Insp']].drive   = 0.3
         model.populations[idx['RampI']].drive  = 0.3
+        model.sync_params()   # push population.drive changes into the vectorized state
 
 def run_schedule(model, idx, sensory_name, schedule):
     for dur, val in schedule:
