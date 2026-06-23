@@ -23,7 +23,7 @@ tau_m:
 neuron_defaults:
   alpha: 1.0
   bias: -0.2
-  tau_v: 0.5
+  tau_v: 2.0
   beta: 30.0
 
 connections:
