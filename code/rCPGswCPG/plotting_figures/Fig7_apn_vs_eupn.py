@@ -8,13 +8,16 @@ from rCPGswCPG.utils.gen_utils import get_project_root
 if __name__ == '__main__':
     rerun = True
     modes = ['eupneic', 'apneustic']
+    # settle time before recording -- tune per mode so a clean representative breath
+    # sits in the pre-stim window (periods differ: ~2.8 s eupnea vs ~5 s apneusis)
+    settle_times = {'eupneic': 31.561, 'apneustic': 31.092}
 
     recordings = {}
     data_dir   = os.path.join(get_project_root(), 'data')
     for m in modes:
         path = os.path.join(data_dir, f'SimApnVsSimEupn_recordings_{m}.pkl')
         if rerun or not os.path.exists(path):
-            rec = run_sim(mode=m)
+            rec = run_sim(mode=m, settle_time=settle_times[m])
             with open(path, 'wb') as f:
                 pickle.dump(rec, f)
         with open(path, 'rb') as f:
@@ -48,8 +51,10 @@ if __name__ == '__main__':
         # ylims  = {k: (-0.01, yref[k] if yref[k] > 0.1 else 1.0) for k in data_m}
         ylims = {k: (-0.01, yref[k] if yref[k] > 0.1 else 1.0) for k in data_m}
 
-        # phase spans (derive from phase times)
-        phase_times = [4380, 4790, 6060, 6930] if m == 'eupneic' else [7940, 9240, 12800] #2670, 3960,
+        # phase spans: FIXED x-positions (kept consistent across the stacked
+        # experimental/simulated panels). Align the simulated breath to these
+        # by tuning settle_times above -- do not move these boundaries.
+        phase_times = [4380, 4790, 6060, 7000] if m == 'eupneic' else [7940, 9240, 12900]
         spans = [(phase_times[i], phase_times[i + 1], colors[i % len(colors)], 0.05)
                  for i in range(len(phase_times) - 1)]
         print(stim_start, stim_end)
