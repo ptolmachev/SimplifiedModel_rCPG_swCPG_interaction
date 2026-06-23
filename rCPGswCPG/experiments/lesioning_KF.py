@@ -1,5 +1,6 @@
 import pickle
 from rCPGswCPG.utils.gen_utils import get_project_root
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.Experiment import Experiment
 import numpy as np
 import os
@@ -10,10 +11,9 @@ import os
 if __name__ == '__main__':
     model_name = "model_complex"
     exp_name = "Experiment_KF_lesioning"
-    param_folder = os.path.join(f"{get_project_root()}", "data", "model_params")
     base_folder = os.path.join(f"{get_project_root()}", "data", "experiments", f"{exp_name}")
 
-    model_params = pickle.load(open(os.path.join(f"{param_folder}", f"params_{model_name}.pkl"), 'rb+'))
+    model_params = model_params_from_cfg(load_model_cfg_file(model_name.replace("model_", "")))
     description = "Reducing the drive to the neural populations of the Kolliker-Fuse from the full value down to zero."
 
     config_dict = dict()

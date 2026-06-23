@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import os
 from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.Network import construct_model
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.protocols.protocols import run_standalone_protocol, run_KF_inhibited_protocol
 from rCPGswCPG.utils.gen_utils import get_project_root, create_dir_if_not_exist
 from tqdm.auto import tqdm
@@ -12,10 +13,9 @@ from tqdm.auto import tqdm
 model_name = "model_complex"
 W_Insp_Sw1 = 0.00
 exp_name = f"KF_lesioning_different_amplitude_stim_{W_Insp_Sw1}"
-param_folder = os.path.join(f"{get_project_root()}", "data", "model_params")
 base_folder = os.path.join(f"{get_project_root()}", "data", "experiments", f"{exp_name}")
 create_dir_if_not_exist(os.path.join(base_folder, "runs"))
-model_params = pickle.load(open(os.path.join(f'{param_folder}', f'params_{model_name}.pkl'), 'rb+'))
+model_params = model_params_from_cfg(load_model_cfg_file(model_name.replace("model_", "")))
 model = construct_model(model_params)
 external_inputs = np.zeros(model_params["N"])
 pnames = model_params["pnames"]

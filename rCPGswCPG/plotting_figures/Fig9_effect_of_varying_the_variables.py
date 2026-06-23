@@ -5,6 +5,7 @@ import pickle
 from scipy.signal import savgol_filter as sg
 from rCPGswCPG.utils.gen_utils import get_project_root
 from rCPGswCPG.utils.utils import get_val_of_param
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 import re
 
 def plot_analytics(base_folder, xlabel, title, x_vline, PIR_bnds, sp_sw_bnds, outfile, show=False):
@@ -120,9 +121,8 @@ if __name__ == '__main__':
     VNA_coeffs = {"KF_phasic" : 0.75, "Sw1" : 0.6, "RampI" : 0.9}
     img_folder = os.path.join(get_project_root(), "img")
     exp_folder = os.path.join(get_project_root(), "data", "experiments")
-    param_folder = os.path.join(get_project_root(), "data", "model_params")
     model_name = "model_complex"
-    model_params = pickle.load(open(os.path.join(f"{param_folder}", f"params_{model_name}.pkl"), 'rb+'))
+    model_params = model_params_from_cfg(load_model_cfg_file(model_name.replace("model_", "")))
     
     for exp_name in os.listdir(exp_folder):
         if not exp_name.startswith("Experiment_") and not exp_name.startswith("Varying_"):

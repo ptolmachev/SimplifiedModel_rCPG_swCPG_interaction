@@ -1,6 +1,7 @@
 import pickle
 from rCPGswCPG.utils.gen_utils import get_project_root
 from rCPGswCPG.utils.utils import *
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.Experiment import Experiment
 import numpy as np
 import os
@@ -53,9 +54,8 @@ if __name__ == '__main__':
     for k, parameter_to_vary in enumerate(parameters_to_vary):
         hr_param_name = get_short_name(parameter_to_vary)
         exp_name = f"Varying_{hr_param_name}"
-        param_folder = os.path.join(f"{get_project_root()}", "data", "model_params")
         base_folder = os.path.join(f"{get_project_root()}", "data", "experiments", f"{exp_name}")
-        model_params = pickle.load(open(os.path.join(f"{param_folder}", f"params_{model_name}.pkl"), 'rb+'))
+        model_params = model_params_from_cfg(load_model_cfg_file(model_name.replace("model_", "")))
         description = f"Varying the {hr_param_name} in the range (0.1 - 1.5) * param_val; param_val={get_val_of_param(parameter_to_vary, model_params)}"
 
         config_dict = dict()

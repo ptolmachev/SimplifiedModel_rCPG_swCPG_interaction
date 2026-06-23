@@ -5,6 +5,7 @@ the actual PRC extraction goes in prc_extraction/run_prc_extraction.py
 from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.utils.sp_utils import *
 from rCPGswCPG.Network import construct_model
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.utils.gen_utils import get_project_root, put
 import numpy as np
 import pickle
@@ -113,8 +114,7 @@ if __name__ == '__main__':
     stim_amps = [0.45]
     stim_durations = [0.25]
 
-    model_param_folder = os.path.join(f'{get_project_root()}', 'data', 'model_params')
-    model_params = pickle.load(open(os.path.join(f'{model_param_folder}', f'params_{model_name}.pkl'), 'rb+'))
+    model_params = model_params_from_cfg(load_model_cfg_file(model_name.replace("model_", "")))
     pnames = model_params["pnames"]
 
     #if you need apneusis, modify the parameters here

@@ -5,8 +5,9 @@ from scipy.optimize import fsolve
 from tqdm.auto import tqdm
 import numdifftools as nd
 import warnings
-from rCPGswCPG.Network_ import firing_rate
+from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.Network import construct_model
+from rCPGswCPG.model_params.config_loader import load_model_cfg_file, model_params_from_cfg
 from rCPGswCPG.utils.gen_utils import get_project_root
 warnings.filterwarnings("ignore")
 from matplotlib import pyplot as plt
@@ -29,10 +30,14 @@ def find_solutions(dim, equations, args, bounds, num_iter):
     return sols
 
 def rhs(vs, ms, ws, drives, inps):
+    # NOTE: this fixed-point computation still hardcodes the OLD parametrization
+    # (scale=1/tau_v_old=200, alpha=0.01, beta=0.3). It is internally consistent
+    # in the old v~O(40) coordinates, but mismatched with the rescaled model
+    # trajectory below; reworking to the new coordinates is a separate task.
     scale = 200
     alpha = 0.01
     bias = -0.2
-    fr = firing_rate(vs)
+    fr = firing_rate(vs, 0.3)
     rhs_v = scale * (-alpha * vs - ms + (drives + bias) + ws @ fr + inps)
     return rhs_v
 
@@ -97,8 +102,7 @@ if __name__ == '__main__':
     data_folder = os.path.join(get_project_root(), "data")
 
     model_name = "swHCO"
-    param_folder = os.path.join(f'{get_project_root()}', 'data', 'model_params')
-    model_params = pickle.load(open(os.path.join(f'{param_folder}', f'params_{model_name}.pkl'), 'rb+'))
+    model_params = model_params_from_cfg(load_model_cfg_file(model_name.replace("model_", "")))
     hco = construct_model(model_params)
     external_inputs = np.zeros(model_params["N"])
     pnames = model_params["pnames"]
