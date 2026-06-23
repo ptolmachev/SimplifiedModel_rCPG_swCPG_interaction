@@ -166,8 +166,8 @@ Previous studies that modeled R-CPG function incorporated Hodgkin-Huxley style b
  \tau_v \frac{dv}{dt} &= -\alpha v - m + (\text{drive} - b)+\text{input} \\
  \tau_m \frac{dm}{dt} &= s(v) - m, 
 \end{align*}
-where $s(v) = 1/(1+e^{-\lambda v} )$ - activity level of a population, $s(v) \in (0,1)$.
-In these equations, the dimensionless variable v is analogous to the average membrane potential of a whole neural population. The variable $m$ mediates the firing rate (spike frequency) adaptation and acts on a much slower timescale than the variable $v$. To account for the correct timescale of the dynamics and the excitability of the neuronal populations, we use $\alpha=1$, $b=0.2$, $\tau_v=2$~ms, $\lambda=30$. The parameter $\tau_m$, which controls the timescale of firing rate adaptation, has distinct values for the different neuronal populations (discussed later), and the details are summarized in \Tableref{tbl: intrinsic_params}. The parameters are chosen manually to match the timescale of respiratory phase durations (inspiration, postinspiration, late expiration) of experimental recordings.
+where $s(v) = 1/(1+e^{-v/v_0} )$ - activity level of a population, $s(v) \in (0,1)$.
+In these equations, the dimensionless variable v is analogous to the average membrane potential of a whole neural population. The variable $m$ mediates the firing rate (spike frequency) adaptation and acts on a much slower timescale than the variable $v$. To account for the correct timescale of the dynamics and the excitability of the neuronal populations, we use $\alpha=1$, $b=0.2$, $\tau_v=2$~ms, $v_0=1/30\approx0.033$. The parameter $\tau_m$, which controls the timescale of firing rate adaptation, has distinct values for the different neuronal populations (discussed later), and the details are summarized in \Tableref{tbl: intrinsic_params}. The parameters are chosen manually to match the timescale of respiratory phase durations (inspiration, postinspiration, late expiration) of experimental recordings.
 The term `input' in the equations incorporates synaptic input from the other nodes of the neuronal populations of the R-CPG or Sw-CPG, as well as the sensory input from the SLN (applicable only to the Sensory Relay neurons, see later). The synaptic input to population j is modeled by the following equation:
 \begin{align*}
  \text{input}_j = \sum_{i \in C}^N w_{ij} s(v_i) +\text{stimulus}_j 
@@ -442,7 +442,7 @@ Sensory Relay & 17500 \\
 Pont. Post-I & 10000 \\
 Sw. gate & 5000 \\ \hline
 \end{tabular}
-\captionof{table}{Intrinsic parameters. For all populations: $\alpha=1$, $b=0.2$, $\tau_v=2$~ms, $\lambda=30$.}\label{tbl: intrinsic_params}
+\captionof{table}{Intrinsic parameters. For all populations: $\alpha=1$, $b=0.2$, $\tau_v=2$~ms, $v_0\approx0.033$.}\label{tbl: intrinsic_params}
 \end{center}
 % \backmatter
 % \bmhead{Supplementary information}
