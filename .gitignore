@@ -30,3 +30,11 @@ paper/*.blg
 paper/*.fls
 paper/*.fdb_latexmk
 paper/*.toc
+
+# Word lock/temp files
+~$*
+
+# compiled manuscript (Overleaf builds its own)
+paper/*.pdf
+paper/*.fdb_latexmk
+paper/*.fls
