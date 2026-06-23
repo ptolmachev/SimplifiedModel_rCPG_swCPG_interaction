@@ -88,8 +88,11 @@ if __name__ == '__main__':
     # Experimental PRC data
     method = 'prc_linear_fit'
     # replace prc_exp_folder with the correct path
-    prc_project_root = os.path.abspath(r"/Users/tolmach/Documents/GitHub/Exp_Data_Processing_rCPG")
-    sim_data_folder = os.path.abspath(r"/Users/tolmach/Documents/GitHub/rCPGswCPG/data")
+    # External experimental-data repo (set EXP_DATA_ROOT to override on another machine)
+    prc_project_root = os.environ.get(
+        "EXP_DATA_ROOT",
+        "/Users/pt1290/Documents/GitHub/Experimental_data_processing_rCPG_SwCPG")
+    sim_data_folder = os.path.join(get_project_root(), "data")
     data_path = os.path.join(prc_project_root, "data")
     data_folder = os.path.join(data_path, "sln_prc_chunked")
     folders = get_folders(data_folder, "_prc")
