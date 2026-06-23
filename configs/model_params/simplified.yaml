@@ -19,9 +19,10 @@ tau:
   KF_gate: 5000
 
 neuron_defaults:
-  alpha: 0.01
+  alpha: 1.0
   bias: -0.2
-  tau_v: 0.005
+  tau_v: 0.5
+  beta: 30.0
 
 connections:
   "(Sw1, Sensory_relay)": 0.12

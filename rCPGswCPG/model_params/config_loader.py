@@ -75,11 +75,12 @@ def model_params_from_cfg(model_cfg: Mapping[str, Any]) -> Dict[str, Any]:
         # Canonical convention: W[to, from].
         W[pidx[to_pop], pidx[from_pop]] = weight
 
-    neuron_defaults = _as_plain_dict(cfg.get("neuron_defaults", {}))
+    neuron_defaults = _as_plain_dict(cfg["neuron_defaults"])
     defaults = {
-        "alpha": float(neuron_defaults.get("alpha", 0.01)),
-        "bias": float(neuron_defaults.get("bias", -0.2)),
-        "tau_v": float(neuron_defaults.get("tau_v", 0.005)),
+        "alpha": float(neuron_defaults["alpha"]),
+        "bias": float(neuron_defaults["bias"]),
+        "tau_v": float(neuron_defaults["tau_v"]),
+        "beta": float(neuron_defaults["beta"]),
     }
 
     drives_cfg = cfg["drives_misc"]

@@ -3,14 +3,14 @@ from collections import deque
 from copy import deepcopy
 from matplotlib import pyplot as plt
 
-def firing_rate(v):
-    return 1.0/(1.0 + np.exp(-0.3 * v)) 
+def firing_rate(v, beta):
+    return 1.0 / (1.0 + np.exp(-beta * v))
 
 class Neuron():
     '''
     A neuron class with simple continuous dynamics exhibiting firing rate adaptation
     '''
-    def __init__(self, name, drive, tau, alpha=0.01, bias=-0.2, tau_v=0.005):
+    def __init__(self, name, drive, tau, alpha, bias, tau_v, beta):
         self.name = name
         self.state = np.zeros(2)
         self.state_history = deque()
@@ -19,6 +19,7 @@ class Neuron():
         self.alpha = alpha
         self.bias = bias
         self.tau_v = tau_v
+        self.beta = beta
 
     def rhs(self, inp):
         v, m = self.state
@@ -27,7 +28,7 @@ class Neuron():
         return np.array([rhs_v, rhs_m])
 
     def fr(self):
-        return firing_rate(self.state[0])
+        return firing_rate(self.state[0], self.beta)
 
     def get_state_history(self):
         return np.array(self.state_history)
@@ -105,8 +106,6 @@ class Neuron():
 #             self.populations[i].state_history = deque()
         # return None
 
-def firing_rate(x):
-    return 1.0 / (1.0 + np.exp(-0.3 * x))
 
 class Network:
     def __init__(self, populations, dt, W):
@@ -119,9 +118,10 @@ class Network:
         self.pnames = [p.name for p in populations]
         self.drive  = np.array([p.drive for p in populations], dtype=float)
         self.tau    = np.array([p.tau   for p in populations], dtype=float)
-        self.alpha  = populations[0].alpha if hasattr(populations[0], 'alpha') else 0.01
-        self.bias   = populations[0].bias  if hasattr(populations[0], 'bias')  else -0.2
-        self.tau_v  = populations[0].tau_v if hasattr(populations[0], 'tau_v') else 0.005
+        self.alpha  = populations[0].alpha
+        self.bias   = populations[0].bias
+        self.tau_v  = populations[0].tau_v
+        self.beta   = populations[0].beta
 
         # state (v, m) kept vectorized; also mirror into each population for compatibility
         self.v = np.zeros(self.N, dtype=float)
@@ -135,7 +135,7 @@ class Network:
         self._m_hist = []
 
     def get_fr(self):
-        return firing_rate(self.v)
+        return firing_rate(self.v, self.beta)
 
     def get_synaptic_inputs(self):
         return (self.W @ self.get_fr().reshape(-1, 1)).ravel()
@@ -161,7 +161,7 @@ class Network:
         m0   = self.m
 
         def rhs(v, m):
-            fr  = firing_rate(v)
+            fr  = firing_rate(v, self.beta)
             syn = self.W @ fr
             rv  = (-self.alpha * v - m + (self.drive + self.bias) + syn + ext) / self.tau_v
             rm  = (fr - m) / self.tau
@@ -192,7 +192,7 @@ class Network:
 
     def get_recordings(self):
         v_history, m_history = self.get_raw_history()
-        fr_history = firing_rate(v_history) if v_history.size else v_history
+        fr_history = firing_rate(v_history, self.beta) if v_history.size else v_history
         t = (self.dt * np.arange(fr_history.shape[0])) / 1000.0
         return {
             'population_names': self.pnames,
@@ -232,16 +232,17 @@ def construct_model(model_params):
     drives = np.sum(drives_misc, axis=0)
     tau = model_params["tau"]
     W = model_params["W"]
-    neuron_defaults = model_params.get("neuron_defaults", {})
+    neuron_defaults = model_params["neuron_defaults"]
 
     populations = [
          Neuron(
             name=pnames[i],
             drive=drives[pnames.index(pnames[i])],
             tau=tau[pnames.index(pnames[i])],
-            alpha=neuron_defaults.get("alpha", 0.01),
-            bias=neuron_defaults.get("bias", -0.2),
-            tau_v=neuron_defaults.get("tau_v", 0.005)
+            alpha=neuron_defaults["alpha"],
+            bias=neuron_defaults["bias"],
+            tau_v=neuron_defaults["tau_v"],
+            beta=neuron_defaults["beta"]
          )
         for i in range(len(pnames))
     ]

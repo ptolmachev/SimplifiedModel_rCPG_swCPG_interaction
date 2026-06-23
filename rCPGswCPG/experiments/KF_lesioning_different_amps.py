@@ -33,7 +33,7 @@ for i, amp in tqdm(enumerate(np.linspace(0, 0.4, 21))):
     # for protocols in ["Protocol_noSI", "Protocol_longSI", "Protocol_shortSI"]
     run_standalone_protocol(model, amp=amp)
     v_history = model.get_raw_history()
-    fr_history = firing_rate(v_history)
+    fr_history = firing_rate(v_history, model.beta)
     t = (model_params['dt'] * np.arange(fr_history.shape[0]) / 1000)  # in sec
 
     recordings = dict()

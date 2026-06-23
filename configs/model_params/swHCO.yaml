@@ -9,9 +9,10 @@ tau:
   Sw2: 1500
 
 neuron_defaults:
-  alpha: 0.01
+  alpha: 1.0
   bias: -0.2
-  tau_v: 0.005
+  tau_v: 0.5
+  beta: 30.0
 
 connections:
   "(Sw2, Sw1)": -0.9
