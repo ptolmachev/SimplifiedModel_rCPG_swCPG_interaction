@@ -3,7 +3,7 @@ import numpy as np
 import os
 import pickle
 from rCPGswCPG.Network_ import firing_rate
-from rCPGswCPG.construct_model import construct_model
+from rCPGswCPG.Network import construct_model
 from rCPGswCPG.plotting_figures.plotting_utils import plot_recordings
 from rCPGswCPG.utils.gen_utils import get_project_root, put
 

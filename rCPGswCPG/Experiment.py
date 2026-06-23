@@ -10,7 +10,7 @@ from rCPGswCPG.utils.utils import *
 from copy import deepcopy
 import os, time, pickle, numpy as np, ray
 from tqdm import tqdm
-from rCPGswCPG.construct_model import construct_model
+from rCPGswCPG.Network import construct_model
 from rCPGswCPG.construct_protocol import construct_protocol
 import json
 from rCPGswCPG.utils.gen_utils import array2str

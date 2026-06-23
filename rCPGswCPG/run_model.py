@@ -11,7 +11,7 @@ if __package__ is None or __package__ == "":
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from rCPGswCPG.Network import firing_rate
-from rCPGswCPG.construct_model import construct_model
+from rCPGswCPG.Network import construct_model
 from rCPGswCPG.model_params.config_loader import model_params_from_cfg
 from rCPGswCPG.protocols.protocols import run_standalone_protocol
 from rCPGswCPG.utils.gen_utils import get_project_root

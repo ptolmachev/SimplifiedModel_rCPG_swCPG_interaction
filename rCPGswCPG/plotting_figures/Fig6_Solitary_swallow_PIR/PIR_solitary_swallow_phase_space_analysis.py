@@ -6,7 +6,7 @@ from tqdm.auto import tqdm
 import numdifftools as nd
 import warnings
 from rCPGswCPG.Network_ import firing_rate
-from rCPGswCPG.construct_model import construct_model
+from rCPGswCPG.Network import construct_model
 from rCPGswCPG.utils.gen_utils import get_project_root
 warnings.filterwarnings("ignore")
 from matplotlib import pyplot as plt

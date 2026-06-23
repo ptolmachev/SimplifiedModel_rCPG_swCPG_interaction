@@ -4,7 +4,7 @@ the actual PRC extraction goes in prc_extraction/run_prc_extraction.py
 '''
 from rCPGswCPG.Network import firing_rate
 from rCPGswCPG.utils.sp_utils import *
-from rCPGswCPG.construct_model import construct_model
+from rCPGswCPG.Network import construct_model
 from rCPGswCPG.utils.gen_utils import get_project_root, put
 import numpy as np
 import pickle
