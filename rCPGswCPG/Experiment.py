@@ -75,9 +75,9 @@ class Experiment:
             pop = name.split('"')[1] if '"' in name else name.split("'")[1]
             k = self.model.pnames.index(pop); self.model.populations[k].drive = float(value)
             self.model.sync_params(); return None
-        if name.endswith(".tau"):
+        if name.endswith(".tau_m"):
             pop = name.split('"')[1] if '"' in name else name.split("'")[1]
-            k = self.model.pnames.index(pop); self.model.populations[k].tau = float(value)
+            k = self.model.pnames.index(pop); self.model.populations[k].tau_m = float(value)
             self.model.sync_params(); return None
         raise ValueError(f"Unsupported parameter spec: {name}")
 
@@ -92,10 +92,10 @@ class Experiment:
                 pop = n.split('"')[1] if '"' in n else n.split("'")[1]
                 k = self.model.pnames.index(pop)
                 self.model.populations[k].drive = float(v)
-            elif n.endswith(".tau"):
+            elif n.endswith(".tau_m"):
                 pop = n.split('"')[1] if '"' in n else n.split("'")[1]
                 k = self.model.pnames.index(pop)
-                self.model.populations[k].tau = float(v)
+                self.model.populations[k].tau_m = float(v)
             else:
                 raise ValueError(f"Unsupported parameter spec: {n}")
         self.model.W = np.asarray(self.model.W, dtype=np.float64)

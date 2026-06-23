@@ -4,7 +4,7 @@ pnames:
   - Sw1
   - Sw2
 
-tau:
+tau_m:
   Sw1: 1500
   Sw2: 1500
 

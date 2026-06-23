@@ -25,14 +25,14 @@ def model_params_from_cfg(model_cfg: Mapping[str, Any]) -> Dict[str, Any]:
 
     Args:
         model_cfg: Hydra/OmegaConf model parameter config with keys
-            `dt`, `pnames`, `tau`, `connections`, `drives_misc`, and
+            `dt`, `pnames`, `tau_m`, `connections`, `drives_misc`, and
             `neuron_defaults`.
             Connections may be specified either as the compact mapping
             `"(to, from)": weight` or the older list-of-dicts form.
 
     Returns:
         Dict with numpy arrays and metadata fields:
-            `pnames`, `N`, `dt`, `tau`, `W`, `drives_misc`.
+            `pnames`, `N`, `dt`, `tau_m`, `W`, `drives_misc`.
     """
     cfg = _as_plain_dict(model_cfg)
     pnames: List[str] = list(cfg["pnames"])
@@ -41,12 +41,12 @@ def model_params_from_cfg(model_cfg: Mapping[str, Any]) -> Dict[str, Any]:
 
     dt = float(cfg["dt"])
 
-    tau_cfg = _as_plain_dict(cfg["tau"])
-    tau = np.zeros(N)
-    for name, value in tau_cfg.items():
+    tau_m_cfg = _as_plain_dict(cfg["tau_m"])
+    tau_m = np.zeros(N)
+    for name, value in tau_m_cfg.items():
         if name not in pidx:
-            raise KeyError(f"Unknown population in tau config: {name}")
-        tau[pidx[name]] = float(value)
+            raise KeyError(f"Unknown population in tau_m config: {name}")
+        tau_m[pidx[name]] = float(value)
 
     W = np.zeros((N, N))
     connections_cfg = cfg["connections"]
@@ -125,7 +125,7 @@ def model_params_from_cfg(model_cfg: Mapping[str, Any]) -> Dict[str, Any]:
         "pnames": pnames,
         "N": N,
         "dt": dt,
-        "tau": tau,
+        "tau_m": tau_m,
         "W": W,
         "drives_misc": drives_misc,
         "neuron_defaults": defaults,

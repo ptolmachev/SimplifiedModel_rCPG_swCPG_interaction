@@ -10,12 +10,12 @@ class Neuron():
     '''
     A neuron class with simple continuous dynamics exhibiting firing rate adaptation
     '''
-    def __init__(self, name, drive, tau, alpha, bias, tau_v, beta):
+    def __init__(self, name, drive, tau_m, alpha, bias, tau_v, beta):
         self.name = name
         self.state = np.zeros(2)
         self.state_history = deque()
         self.drive = drive
-        self.tau = tau
+        self.tau_m = tau_m
         self.alpha = alpha
         self.bias = bias
         self.tau_v = tau_v
@@ -24,7 +24,7 @@ class Neuron():
     def rhs(self, inp):
         v, m = self.state
         rhs_v = (-self.alpha * v - m + (self.drive + self.bias) + inp) / self.tau_v
-        rhs_m = (self.fr() - m) / self.tau
+        rhs_m = (self.fr() - m) / self.tau_m
         return np.array([rhs_v, rhs_m])
 
     def fr(self):
@@ -117,7 +117,7 @@ class Network:
         # pull per-neuron constants once
         self.pnames = [p.name for p in populations]
         self.drive  = np.array([p.drive for p in populations], dtype=float)
-        self.tau    = np.array([p.tau   for p in populations], dtype=float)
+        self.tau_m  = np.array([p.tau_m for p in populations], dtype=float)
         self.alpha  = populations[0].alpha
         self.bias   = populations[0].bias
         self.tau_v  = populations[0].tau_v
@@ -164,7 +164,7 @@ class Network:
             fr  = firing_rate(v, self.beta)
             syn = self.W @ fr
             rv  = (-self.alpha * v - m + (self.drive + self.bias) + syn + ext) / self.tau_v
-            rm  = (fr - m) / self.tau
+            rm  = (fr - m) / self.tau_m
             return rv, rm
 
         k1v, k1m = rhs(v0,                     m0)
@@ -213,7 +213,7 @@ class Network:
     def sync_params(self):
         self.W  = np.asarray(self.W, dtype=np.float64)  # force stable dtype
         self.drive = np.array([p.drive for p in self.populations], dtype=np.float64)
-        self.tau   = np.array([p.tau   for p in self.populations], dtype=np.float64)
+        self.tau_m = np.array([p.tau_m for p in self.populations], dtype=np.float64)
         self.tau_v = np.array([p.tau_v for p in self.populations], dtype=np.float64)
 
 
@@ -221,7 +221,7 @@ class Network:
 # 'dt',
 # 'pnames' - names of the neural populations,
 # 'drives_misc' - the array of values containing drives to populations from one or more sources
-# 'tau' - spike-frequency adaptation constants for the populations
+# 'tau_m' - spike-frequency adaptation constants for the populations
 # 'W' - connectivity matrix
 
 def construct_model(model_params):
@@ -230,7 +230,7 @@ def construct_model(model_params):
     pnames = model_params["pnames"]
     drives_misc = model_params["drives_misc"]
     drives = np.sum(drives_misc, axis=0)
-    tau = model_params["tau"]
+    tau_m = model_params["tau_m"]
     W = model_params["W"]
     neuron_defaults = model_params["neuron_defaults"]
 
@@ -238,7 +238,7 @@ def construct_model(model_params):
          Neuron(
             name=pnames[i],
             drive=drives[pnames.index(pnames[i])],
-            tau=tau[pnames.index(pnames[i])],
+            tau_m=tau_m[pnames.index(pnames[i])],
             alpha=neuron_defaults["alpha"],
             bias=neuron_defaults["bias"],
             tau_v=neuron_defaults["tau_v"],

@@ -10,7 +10,7 @@ pnames:
   - KF_phasic
   - KF_gate
 
-tau:
+tau_m:
   Insp: 5000
   Exp: 5000
   LateExp: 5000

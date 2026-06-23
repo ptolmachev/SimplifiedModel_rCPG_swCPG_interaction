@@ -16,8 +16,8 @@ if __name__ == '__main__':
         "self.model.W[self.model.pnames.index(\"Sw1\"),self.model.pnames.index(\"Sw2\")]",
         "self.model.populations[self.model.pnames.index(\"Sw1\")].drive",
         "self.model.populations[self.model.pnames.index(\"Sw2\")].drive",
-        "self.model.populations[self.model.pnames.index(\"Sw1\")].tau",
-        "self.model.populations[self.model.pnames.index(\"Sw2\")].tau",
+        "self.model.populations[self.model.pnames.index(\"Sw1\")].tau_m",
+        "self.model.populations[self.model.pnames.index(\"Sw2\")].tau_m",
         "self.model.W[self.model.pnames.index(\"Sw1\"),self.model.pnames.index(\"Sensory_relay\")]",
         "self.model.W[self.model.pnames.index(\"Sw2\"),self.model.pnames.index(\"Sensory_relay\")]",
         "self.model.W[self.model.pnames.index(\"Insp\"),self.model.pnames.index(\"Sensory_relay\")]",
@@ -41,12 +41,12 @@ if __name__ == '__main__':
         "self.model.populations[self.model.pnames.index(\"LateExp\")].drive",
         "self.model.populations[self.model.pnames.index(\"KF_gate\")].drive",
         "self.model.populations[self.model.pnames.index(\"KF_phasic\")].drive",
-        "self.model.populations[self.model.pnames.index(\"Insp\")].tau",
-        "self.model.populations[self.model.pnames.index(\"Exp\")].tau",
-        "self.model.populations[self.model.pnames.index(\"LateExp\")].tau",
-        "self.model.populations[self.model.pnames.index(\"KF_gate\")].tau",
-        "self.model.populations[self.model.pnames.index(\"KF_phasic\")].tau",
-        "self.model.populations[self.model.pnames.index(\"Sensory_relay\")].tau"
+        "self.model.populations[self.model.pnames.index(\"Insp\")].tau_m",
+        "self.model.populations[self.model.pnames.index(\"Exp\")].tau_m",
+        "self.model.populations[self.model.pnames.index(\"LateExp\")].tau_m",
+        "self.model.populations[self.model.pnames.index(\"KF_gate\")].tau_m",
+        "self.model.populations[self.model.pnames.index(\"KF_phasic\")].tau_m",
+        "self.model.populations[self.model.pnames.index(\"Sensory_relay\")].tau_m"
     ] #35 parameters
 
     print(len(parameters_to_vary))
