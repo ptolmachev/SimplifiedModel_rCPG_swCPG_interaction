@@ -78,9 +78,9 @@ def analyse_noSI(dt, fr, pnames):
     streaks_exp = calc_streaks(labels, label_to_count="Exp")
 
     Ti = np.median(streaks_insp) * dt
-    Ti_std = np.std(streaks_insp) * dt**2
+    Ti_std = np.std(streaks_insp) * dt
     Te = np.median(streaks_exp) * dt
-    Te_std = np.std(streaks_exp) * dt**2
+    Te_std = np.std(streaks_exp) * dt
     Ttot = Ti + Te
     Ttot_std = Ti_std + Te_std
 
