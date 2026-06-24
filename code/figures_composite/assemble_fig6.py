@@ -60,14 +60,11 @@ def get_points(v, i0, i1, n):
         post = v[i1:, 0]
         p2 = i1 + int(np.argmax(post))                  # rebound onto the upper sheet
         p3 = p2 + int(np.argmin(np.diff(v[p2:, 0])))    # steepest drop = cusp/termination
-        # point 4 = lower-sheet landing just after the fall, kept well before the final
-        # rest so it does not overlap point 1 in the phase-space panel
-        win = int(0.5 * 1000 / DT)
-        p4 = p3 + int(np.argmin(v[p3:p3 + win, 0]))
+        # point 4 = partway along the lower-sheet return (~1.5 s), not all the way to rest
+        p4 = min(int(1.5 * 1000 / DT), len(v) - 1)
         return [i0, p2, p3, p4]
-    # scenario 2: point 2 at the END of the driven plateau (slightly later in time)
-    drv = v[i0:i1 + 1, 0]
-    p2 = i0 + int(np.where(drv >= 0.95 * drv.max())[0][-1])
+    # scenario 2: point 2 in the middle of the stimulation
+    p2 = (i0 + i1) // 2
     return [i0, p2, len(v) - 1]
 
 
