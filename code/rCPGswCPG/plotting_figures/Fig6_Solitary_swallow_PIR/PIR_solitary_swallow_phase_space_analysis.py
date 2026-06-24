@@ -1,5 +1,6 @@
 import pickle
 import os
+import sys
 import numpy as np
 from scipy.optimize import fsolve
 from tqdm.auto import tqdm
@@ -30,15 +31,15 @@ def find_solutions(dim, equations, args, bounds, num_iter):
     return sols
 
 def rhs(vs, ms, ws, drives, inps):
-    # NOTE: this fixed-point computation still hardcodes the OLD parametrization
-    # (scale=1/tau_v_old=200, alpha=0.01, beta=0.3). It is internally consistent
-    # in the old v~O(40) coordinates, but mismatched with the rescaled model
-    # trajectory below; reworking to the new coordinates is a separate task.
-    scale = 200
-    alpha = 0.01
+    # Fast-subsystem velocity dv/dt in the rescaled (new) parametrization, matching
+    # Network.step: unit leak (alpha=1), bias=-0.2, firing-rate slope beta=30.
+    # The leading time-constant factor (1/tau_v) is omitted: it is a positive scalar
+    # that affects neither the fixed-point locations nor their stability class.
+    alpha = 1.0
     bias = -0.2
-    fr = firing_rate(vs, 0.3)
-    rhs_v = scale * (-alpha * vs - ms + (drives + bias) + ws @ fr + inps)
+    beta = 30.0
+    fr = firing_rate(vs, beta)
+    rhs_v = -alpha * vs - ms + (drives + bias) + ws @ fr + inps
     return rhs_v
 
 def determine_stability(point, rhs_eq, ms, ws, drives, inps):
@@ -59,8 +60,9 @@ def find_fixed_points(ms, drives, ws, inps, bounds):
     return data
 
 def calculate_equilibrium_surface(drives, ws, inps, bounds):
-    m1s = np.linspace(0.0, 0.04, 40)
-    m2s = np.linspace(0.17, 0.23, 40)
+    # grid spans both scenarios' trajectories (scenario 2 reaches m1~0.097, m2~0.172)
+    m1s = np.linspace(0.0, 0.10, 60)
+    m2s = np.linspace(0.16, 0.23, 45)
 
     # for every point find solutions of the fast subsystem:
     data_surf = np.empty((0, 5), dtype=object)
@@ -97,7 +99,7 @@ def plot_sheet_trisurf(x, y, z, ax=None, color=None, alpha=0.12, len_pct=95, dz_
 
 if __name__ == '__main__':
     #plotting PPA
-    recalculate = False
+    recalculate = False  # equilibrium surface is scenario-independent; reuse the cache
     img_folder = os.path.join(get_project_root(), "img")
     data_folder = os.path.join(get_project_root(), "data")
 
@@ -108,8 +110,9 @@ if __name__ == '__main__':
     pnames = model_params["pnames"]
     weights = np.array([model_params["W"][0, 1], model_params["W"][1, 0]])
     drives = np.array([model_params["drives_misc"][0, 0], model_params["drives_misc"][0, 1]])
-    inputs = np.array([0.12, 0.07])
-    # inputs = np.array([0.19, 0.07])
+    # scenario stim to (Sw1, Sw2) via CLI: `... 0.12 0.07` (panel B) or `0.19 0.07` (panel D)
+    inputs = np.array([float(sys.argv[1]), float(sys.argv[2])]) if len(sys.argv) > 2 \
+        else np.array([0.12, 0.07])
     dt = 0.01
     hco.dt = dt
     T_before_stim = 0.5
@@ -130,9 +133,9 @@ if __name__ == '__main__':
     print(np.min(m1_traj), np.max(m1_traj))
     print(np.min(m2_traj), np.max(m2_traj))
 
-    lim = np.array([-40, 20])
+    lim = np.array([-1, 1])
     inps = np.zeros(2)
-    bounds = np.array([[-40, 20], [-40, 20]])
+    bounds = np.array([[-1, 1], [-1, 1]])   # new v-coordinate range ~[-0.4, 0.05]
     tag = (np.abs(weights[0]), np.abs(weights[1]), drives[0], drives[1])
     file_name = os.path.join(data_folder, f"eq_surface_simplified_HCO_{tag}.pkl")
     if not os.path.exists(file_name) or recalculate:
@@ -182,7 +185,7 @@ if __name__ == '__main__':
     ax.plot3D(m1_traj[start_stim:stop_stim], m2_traj[start_stim:stop_stim], v1_traj[start_stim:stop_stim], color='red', alpha=0.5)
     ax.plot3D(m1_traj[stop_stim:], m2_traj[stop_stim:], v1_traj[stop_stim:], color='k', alpha=0.5)
 
-    ax.set_zlim(-40, 15)
+    ax.set_zlim(-0.5, 0.15)
 
     # three ticks per axis
     xt = np.linspace(*ax.get_xbound(), 3)
@@ -196,7 +199,7 @@ if __name__ == '__main__':
     # formatters: x/y with two decimals, z as integers
     ax.xaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v:.2f}"))
     ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v:.2f}"))
-    ax.zaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{int(round(v))}"))
+    ax.zaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v:.2f}"))
 
     for a in (ax.xaxis, ax.yaxis, ax.zaxis):
         a.pane.set_facecolor((1, 1, 1, 0))

@@ -54,7 +54,10 @@ if __name__ == '__main__':
         # phase spans: FIXED x-positions (kept consistent across the stacked
         # experimental/simulated panels). Align the simulated breath to these
         # by tuning settle_times above -- do not move these boundaries.
-        phase_times = [4380, 4790, 6060, 7000] if m == 'eupneic' else [7940, 9240, 12900]
+        # phase boundaries on the 40000-pt resampled grid, snapped to the simulated
+        # PNA burst of the reference pre-stim breath (eupnea: I/E1/E2 with E split at
+        # the expiratory midpoint; apneusis: I/E with I = the prolonged plateau).
+        phase_times = [4186, 4633, 5804, 6975] if m == 'eupneic' else [7539, 8852, 12549]
         spans = [(phase_times[i], phase_times[i + 1], colors[i % len(colors)], 0.05)
                  for i in range(len(phase_times) - 1)]
         print(stim_start, stim_end)

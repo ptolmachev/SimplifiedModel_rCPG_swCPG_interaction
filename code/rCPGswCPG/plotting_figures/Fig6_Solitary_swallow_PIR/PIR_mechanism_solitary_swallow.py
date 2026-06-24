@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import sys
 from matplotlib import pyplot as plt
 import os
 from rCPGswCPG.Network import firing_rate
@@ -15,8 +16,9 @@ pnames = model_params["pnames"]
 T_no_stim = 15
 T_stim = 0.15
 T_afterstim = 0.5
-stim_input = np.array([0.12, 0.07])
-# stim_input = np.array([0.17, 0.07]) # <-- No PIR
+# scenario stim to (Sw1, Sw2) via CLI: `... 0.12 0.07` (panel A) or `0.19 0.07` (panel C)
+stim_input = np.array([float(sys.argv[1]), float(sys.argv[2])]) if len(sys.argv) > 2 \
+    else np.array([0.12, 0.07])
 model.run(T_no_stim, input=np.zeros(2))
 model.run(T_stim, input=stim_input)
 model.run(T_afterstim, input=np.zeros(2))
@@ -35,5 +37,6 @@ ax.axvline(T_no_stim + T_stim, alpha = 0.1)
 ax.spines['right'].set_visible(False)
 ax.spines['top'].set_visible(False)
 plt.legend()
-plt.savefig(os.path.join(get_project_root(), "img", "PIR_mechanism_solitary_swallow.pdf"), bbox_inches='tight')
+tag = f"{stim_input[0]}_{stim_input[1]}"
+plt.savefig(os.path.join(get_project_root(), "img", f"PIR_mechanism_solitary_swallow_{tag}.pdf"), bbox_inches='tight')
 plt.show()
