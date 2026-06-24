@@ -112,21 +112,23 @@ def plot_phase(ax, stable, unstable, v, m, i0, i1, letter, points):
     ax.xaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v:.2f}"))
     ax.yaxis.set_major_formatter(FuncFormatter(lambda v, p: f"{v:.2f}"))
     ax.view_init(elev=20, azim=-127)
+    ax.set_box_aspect(None, zoom=1.45)                  # enlarge the 3D content in the panel
     ax.text2D(0.0, 0.92, letter, transform=ax.transAxes, fontsize=18, fontweight='bold')
 
 
 def main():
     stable, unstable = load_surface()
-    fig = plt.figure(figsize=(13, 8))
+    fig = plt.figure(figsize=(15, 8))
+    # give the 3D phase-space column more width; traces stay compact on the left
+    gs = fig.add_gridspec(2, 2, width_ratios=[1, 1.7], wspace=0.02, hspace=0.3)
     letters = [('A', 'B'), ('C', 'D')]
     for row, stim in enumerate(SCENARIOS):
         t, v, m, i0, i1 = run_trajectory(stim)
         pts = get_points(v, i0, i1, 4 if row == 0 else 3)   # scenario 1: 4 stages, scenario 2: 3
-        ax_tr = fig.add_subplot(2, 2, 2 * row + 1)
+        ax_tr = fig.add_subplot(gs[row, 0])
         plot_traces(ax_tr, t, v, i0, i1, letters[row][0], pts, show_x=(row == len(SCENARIOS) - 1))
-        ax_ph = fig.add_subplot(2, 2, 2 * row + 2, projection='3d')
+        ax_ph = fig.add_subplot(gs[row, 1], projection='3d')
         plot_phase(ax_ph, stable, unstable, v, m, i0, i1, letters[row][1], pts)
-    fig.subplots_adjust(wspace=0.15, hspace=0.3)
     out = os.path.join(get_project_root(), "img", "Fig6_composite.pdf")
     fig.savefig(out, bbox_inches='tight', transparent=False, dpi=300)
     plt.close(fig)
