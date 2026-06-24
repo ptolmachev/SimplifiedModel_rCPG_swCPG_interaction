@@ -94,14 +94,15 @@ def plot_traces(ax, t, v, i0, i1, letter, points, show_x=True):
 
 def plot_phase(ax, stable, unstable, v, m, i0, i1, letter, points):
     """Cusp equilibrium surface (stable navy / unstable sky) with the trajectory on it."""
+    ax.computed_zorder = False          # respect manual zorder so the trajectory stays in front
     # opaque light-colored surface points (no alpha) so the figure stays vector
-    ax.scatter(*stable, c=[(0.62, 0.66, 0.95)], marker='o', s=4, edgecolors='none')
-    ax.scatter(*unstable, c=[(0.62, 0.83, 0.96)], marker='o', s=4, edgecolors='none')
-    ax.plot3D(m[i0:i1, 0], m[i0:i1, 1], v[i0:i1, 0], color='red', alpha=0.7)   # stim
-    ax.plot3D(m[i1:, 0], m[i1:, 1], v[i1:, 0], color='k', alpha=0.7)           # post-stim
-    for n, pi in enumerate(points):                     # numbered trajectory stages
-        ax.scatter(m[pi, 0], m[pi, 1], v[pi, 0], color='k', s=22)
-        ax.text(m[pi, 0], m[pi, 1], v[pi, 0] + 0.05, str(n + 1), fontsize=11, fontweight='bold')
+    ax.scatter(*stable, c=[(0.62, 0.66, 0.95)], marker='o', s=4, edgecolors='none', zorder=0)
+    ax.scatter(*unstable, c=[(0.62, 0.83, 0.96)], marker='o', s=4, edgecolors='none', zorder=0)
+    ax.plot3D(m[i0:i1, 0], m[i0:i1, 1], v[i0:i1, 0], color='red', lw=2, zorder=10)   # stim
+    ax.plot3D(m[i1:, 0], m[i1:, 1], v[i1:, 0], color='k', lw=2, zorder=10)           # post-stim
+    for n, pi in enumerate(points):                     # numbered trajectory stages, in front
+        ax.scatter(m[pi, 0], m[pi, 1], v[pi, 0], color='k', s=24, zorder=15)
+        ax.text(m[pi, 0], m[pi, 1], v[pi, 0] + 0.05, str(n + 1), fontsize=11, fontweight='bold', zorder=20)
     ax.set_zlim(-0.55, 0.25)
     for a in (ax.xaxis, ax.yaxis, ax.zaxis):
         a.pane.set_facecolor((1, 1, 1, 0)); a.pane.set_edgecolor((1, 1, 1, 0))
