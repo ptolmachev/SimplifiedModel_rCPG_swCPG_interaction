@@ -47,17 +47,19 @@ def load_mode(mode):
     return {k: resample(rec[k], grid, L) for k in keys}
 
 
+# opaque fills (no alpha) so the figure stays fully vector with zero transparency
+STIM_FILL = (0.93, 0.93, 0.93)
+BAND_FILLS = [(1.0, 0.90, 0.90), (0.90, 0.90, 1.0), (0.90, 1.0, 0.90)]
+
+
 # ------------------------------------------------------------------ plotting
 def overlay(ax, phase_times):
-    """Draw the shared stim window plus this panel's phase bands/dividers."""
-    ax.axvspan(STIM_START, STIM_END, color='k', alpha=0.05)
-    for x in (STIM_START, STIM_END):
-        ax.axvline(x, c='k', ls='--', lw=1)
-    band_colors = ['r', 'b', 'g']
+    """Draw the shared stim window plus this panel's phase bands/dividers (opaque)."""
+    ax.axvspan(STIM_START, STIM_END, color=STIM_FILL, lw=0, zorder=0)
     for i in range(len(phase_times) - 1):
-        ax.axvspan(phase_times[i], phase_times[i + 1], color=band_colors[i % 3], alpha=0.06)
-    for x in phase_times:
-        ax.axvline(x, c='k', ls='--', lw=1)
+        ax.axvspan(phase_times[i], phase_times[i + 1], color=BAND_FILLS[i % 3], lw=0, zorder=0)
+    for x in (STIM_START, STIM_END, *phase_times):
+        ax.axvline(x, c='k', ls='--', lw=1, zorder=1)
 
 
 def main():
@@ -85,7 +87,7 @@ def main():
     prev = None
     for ax, (grp, key, src, mode, col, lbl) in zip(axs, rows):
         y = src[key]
-        ax.plot(y, lw=1.6, c=col)
+        ax.plot(y, lw=1.6, c=col, zorder=3)
         overlay(ax, BANDS[mode])
         ax.set_xlim(0, L)
         # leave clear headroom so the peak fills ~2/3 of the (seamless) panel and never

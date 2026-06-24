@@ -94,13 +94,15 @@ def main():
                                               width_ratios=[1.1, 2, 2], hspace=0.0, wspace=0.15)
         # --- analytics ---
         axa = fig.add_subplot(gs[:, 0])
-        axa.scatter(R["x"], R["Nsw"], s=14, color="g")
-        for (lo, hi), col in [(R["pir"], "r"), (R["spw"], "b")]:
+        # opaque pale fills / muted guide lines (no alpha -> vector, no transparency)
+        for (lo, hi), fill, line in [(R["pir"], (1.0, 0.90, 0.90), (0.85, 0.45, 0.45)),
+                                     (R["spw"], (0.90, 0.90, 1.0), (0.45, 0.45, 0.85))]:
             if lo is not None:
                 a, b = R["x_of"](lo), R["x_of"](hi)
-                axa.axvspan(min(a, b), max(a, b), color=col, alpha=0.06)
-                axa.axvline(a, color=col, ls="--", alpha=0.5); axa.axvline(b, color=col, ls="--", alpha=0.5)
-        axa.axvline(R["xnorm"], color="k", alpha=0.5, lw=3)
+                axa.axvspan(min(a, b), max(a, b), color=fill, lw=0, zorder=0)
+                axa.axvline(a, color=line, ls="--", zorder=1); axa.axvline(b, color=line, ls="--", zorder=1)
+        axa.axvline(R["xnorm"], color=(0.55, 0.55, 0.55), lw=3, zorder=1)
+        axa.scatter(R["x"], R["Nsw"], s=14, color="g", zorder=3)
         # arrows point at the exact data points used for example recordings 1 and 2
         for k, ex in enumerate(R["examples"]):
             ev = ex[3]                              # actual param value of this example
@@ -117,9 +119,10 @@ def main():
         for k, (PNA, VNA, stim, _) in enumerate(R["examples"]):
             for sub, (sig, col) in enumerate([(PNA, "r"), (VNA, "b")]):
                 ax = fig.add_subplot(gs[sub, 1 + k])
-                ax.plot(sig, c=col, lw=1.0)
                 ls, le, ss, se = stim
-                ax.axvspan(ls, le, color="r", alpha=0.10); ax.axvspan(ss, se, color="r", alpha=0.25)
+                ax.axvspan(ls, le, color=(1.0, 0.90, 0.90), lw=0, zorder=0)   # long stim (opaque)
+                ax.axvspan(ss, se, color=(1.0, 0.78, 0.78), lw=0, zorder=0)   # short stim (opaque)
+                ax.plot(sig, c=col, lw=1.0, zorder=3)
                 ax.set_xlim(0, len(sig)); ax.margins(x=0)
                 ax.axis("off")
                 if sub == 0:

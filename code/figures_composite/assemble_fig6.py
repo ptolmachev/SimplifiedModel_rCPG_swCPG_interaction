@@ -76,7 +76,7 @@ def plot_traces(ax, t, v, i0, i1, letter, points, show_x=True):
     a = i0 - int(0.3 * 1000 / DT)
     ax.plot(t[a:], v[a:, 0], 'r', lw=1.6, label=r'$\text{Sw}_1$ ($v_1$)')
     ax.plot(t[a:], v[a:, 1], 'b', lw=1.6, label=r'$\text{Sw}_2$ ($v_2$)')
-    ax.axvspan(t[i0], t[i1], color='r', alpha=0.08)
+    ax.axvspan(t[i0], t[i1], color=(1.0, 0.90, 0.90), lw=0, zorder=0)   # opaque (vector)
     for n, pi in enumerate(points):                     # numbered trajectory stages on Sw1
         ax.scatter(t[pi], v[pi, 0], color='k', s=18, zorder=5)
         ax.annotate(str(n + 1), (t[pi], v[pi, 0]), textcoords='offset points',
@@ -94,8 +94,9 @@ def plot_traces(ax, t, v, i0, i1, letter, points, show_x=True):
 
 def plot_phase(ax, stable, unstable, v, m, i0, i1, letter, points):
     """Cusp equilibrium surface (stable navy / unstable sky) with the trajectory on it."""
-    ax.scatter(*stable, c='blue', marker='o', alpha=0.08, s=6)
-    ax.scatter(*unstable, c='deepskyblue', marker='o', alpha=0.08, s=6)
+    # opaque light-colored surface points (no alpha) so the figure stays vector
+    ax.scatter(*stable, c=[(0.62, 0.66, 0.95)], marker='o', s=4, edgecolors='none')
+    ax.scatter(*unstable, c=[(0.62, 0.83, 0.96)], marker='o', s=4, edgecolors='none')
     ax.plot3D(m[i0:i1, 0], m[i0:i1, 1], v[i0:i1, 0], color='red', alpha=0.7)   # stim
     ax.plot3D(m[i1:, 0], m[i1:, 1], v[i1:, 0], color='k', alpha=0.7)           # post-stim
     for n, pi in enumerate(points):                     # numbered trajectory stages

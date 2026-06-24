@@ -61,10 +61,10 @@ def main():
 
     prev = None
     for ax, (letter, key, y, col, lbl, i0, i1) in zip(axs, rows):
-        ax.plot(y, lw=1.5, c=col)
-        ax.axvspan(i0, i1, color='k', alpha=0.05)
+        ax.plot(y, lw=1.5, c=col, zorder=3)
+        ax.axvspan(i0, i1, color=(0.93, 0.93, 0.93), lw=0, zorder=0)   # opaque (vector, no alpha)
         for x in (i0, i1):
-            ax.axvline(x, c='k', ls='--', lw=1)
+            ax.axvline(x, c='k', ls='--', lw=1, zorder=1)
         ax.set_xlim(0, len(y))
         ymax = 1.05 * float(np.nanmax(y))
         ax.set_ylim(-0.02 * ymax, ymax if ymax > 0 else 1.0)
