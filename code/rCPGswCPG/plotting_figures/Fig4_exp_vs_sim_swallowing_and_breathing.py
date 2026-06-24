@@ -10,7 +10,10 @@ from scipy.signal import savgol_filter as sg
 if __name__ == '__main__':
     # ---- experiment config (indices & windows) ----
     stim_start_ind, stim_end_ind = 15000, 25000
-    t1, t2, t3, t4 = 6600, 7040, 8168, 9230
+    # phase boundaries of the reference pre-stim breath, on the 40000-pt resampled grid.
+    # t1/t2/t4 = Insp half-max crossings (onset / offset / next onset); t3 = expiration
+    # midpoint (E1/E2 split is conventional -- late-E barely fires in eupnea).
+    t1, t2, t3, t4 = 6554, 6901, 8126, 9351
     experiment_ind_start, experiment_ind_end = 5600, 18900
     simulation_ind_start, simulation_ind_end = 0, -1
     settle_time = 29.2  # sec; for the best visual match with experiment
